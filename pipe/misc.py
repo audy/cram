@@ -12,7 +12,6 @@ def okay(s):
     e = '\033[0m'
     print ' %s-%s  %s' % (c, e, s)
 
-
 def ohno(s):
     ''' did something and AAH! failure! '''
     c = '\033[91m'
@@ -95,7 +94,7 @@ def phmmer(**ops):
     ohai('running phmmer: %(query)s vs. %(db)s' % ops)
     
     run(phmmer)
-    
+
 def prepare_seed(**ops):
     ''' create table of seed_id -> subsystems '''
     
@@ -117,7 +116,7 @@ def prepare_seed(**ops):
             assert type(fig) == str
             
             figs_to_name[fig] = name
-            
+    
     # load full subsystem names using subsystems2role
     name_to_ss = {}
     with open(ops['role']) as handle:
@@ -128,10 +127,9 @@ def prepare_seed(**ops):
             assert(len(line) == 4)
             
             a, b, c, d = line
-
+            
             name_to_ss[d] = [b, a, c]
-
-
+    
     # Print table, using SEED headers
     with open(ops['seed']) as handle, open(ops['out'], 'w') as out:
         for line in handle:
@@ -140,9 +138,9 @@ def prepare_seed(**ops):
                 fig = line.split()[0][1:]
                 
                 name = figs_to_name.get(fig, fig)
-
+                
                 ss = name_to_ss.get(name, [None]*4)
                 
                 print >> out, "%s\t%s;%s;%s;%s" % (fig, ss[0], ss[1], ss[2], name)
-                
+            
             
