@@ -1,4 +1,5 @@
 import os
+import sys
 
 def ohai(s):
     ''' simple status message '''
@@ -142,5 +143,4 @@ def prepare_seed(**ops):
                 ss = name_to_ss.get(name, [None]*4)
                 
                 print >> out, "%s\t%s;%s;%s;%s" % (fig, ss[0], ss[1], ss[2], name)
-            
-            
+  
