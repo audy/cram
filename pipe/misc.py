@@ -1,23 +1,31 @@
+# encoding: utf-8
+
 import os
 import sys
 
+def get_outdir(out):
+    ''' append config to d '''
+    def s(s):
+        return out + '/' + s.lstrip('/')
+    return s
+
 def ohai(s):
     ''' simple status message '''
-    c = '\033[90m'
+    c = '\033[96m'
     e = '\033[0m'
-    print '   %s %s%s ' % (c, s, e)
+    print ' %s✪ %s%s' % (c, s, e)
 
 def okay(s):
     ''' successfully did something '''
     c = '\033[92m'
     e = '\033[0m'
-    print ' %s-%s  %s' % (c, e, s)
+    print ' %s✓%s %s' % (c, e, s)
 
 def ohno(s):
     ''' did something and AAH! failure! '''
     c = '\033[91m'
     e = '\033[0m'
-    print ' %s-%s  %s' % (c, e, s)
+    print ' %s✖%s %s' % (c, e, s)
     quit()
 
 def run(cmd):
