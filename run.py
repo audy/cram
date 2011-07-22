@@ -57,9 +57,9 @@ prodigal(
     out    = 'out/orfs/predicted_orfs' # prefix*
 )
 
-# create table connecting seed and subsystems
-# seed_sequence_number -> system;subsystem;subsubsystem;enzyme
-# use this later to make functions tables
+create table connecting seed and subsystems
+seed_sequence_number -> system;subsystem;subsubsystem;enzyme
+use this later to make functions tables
 
 prepare_seed(
     seed = 'db/seed.fasta',
@@ -67,7 +67,6 @@ prepare_seed(
     role = 'db/subsystems2role',
     out  = 'db/seed_ss.txt'
 )
-quit()
 
 # identify ORFs using phmmer
 phmmer(

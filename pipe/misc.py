@@ -77,6 +77,11 @@ def phmmer(**ops):
     # so it would be a good idea to put some kind of simple
     # map reduce in here,  ala: from concurrent.futures import *
     
+    # phmmer is slow when it comes to threading. I don't think has
+    # anything to do with Disk IO as it's still slow even with a
+    # ram disk. I may have to use some kind of map-reduce to speed
+    # this up.
+    
     phmmer = ' '.join([
         'bin/phmmer',
         '--notextw',
