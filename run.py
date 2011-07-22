@@ -4,79 +4,104 @@ CUTOFF = 70 # read length cutoff
 
 from pipe import *
 
-run('mkdir -p test_out/')
+ohai('running pipeline!')
 
-# Trim Reads
-sequences = (r for r in Dna(open('reads.txt'), type='fastq'))
-trimmed = (Trim.trim(r) for r in sequences)
-trimmed = (i for i in trimmed if len(i) > CUTOFF)
+# dirs = [
+#     'out/',
+#     'out/orfs',
+#     'out/anno',
+#     'out/refs']
+#     
+# [ run('mkdir -p %s' % i) for i in dirs ]
+# 
+# 
+# # Trim Reads
+# sequences = (r for r in Dna(open('reads.txt'), type='fastq'))
+# trimmed = (Trim.trim(r) for r in sequences)
+# trimmed = (i for i in trimmed if len(i) > CUTOFF)
+# 
+# with open('out/reads_trimmed.txt', 'w') as handle:
+#     for t in trimmed:
+#         print >> handle, t.fasta
+# 
+# # assemble with velvet
+# 
+# kmers = {
+#     35: 'out/contigs_35',
+#     45: 'out/contigs_45',
+#     55: 'out/contigs_55'
+# }
+# 
+# for kmer in kmers:
+#     velvet(
+#         reads  = 'out/reads_trimmed.txt',
+#         outdir = kmers[kmer],
+#         kmer   = kmer
+#     )
+#     
+# 
+# # concatenate all contigs
+# run('cat %s > %s' % (
+#     ' '.join(i + '/Sequences' for i in kmers.values()),
+#     'out/joined_contigs.txt')
+# )
+# 
+# # run final assembly
+# velvet(
+#     reads    = 'out/joined_contigs.txt',
+#     outdir   = 'out/final_contigs',
+#     kmer     = 35
+# )
+# 
+# # predict ORFs
+# prodigal(
+#     input  = 'out/final_contigs/Sequences',
+#     out    = 'out/orfs/predicted_orfs' # prefix*
+# )
 
-with open('test_out/reads_trimmed.txt', 'w') as handle:
-    for t in trimmed:
-        print >> handle, t.fasta
-
-# assemble with velvet
-kmers = {
-    35: 'test_out/contigs_35',
-    45: 'test_out/contigs_45',
-    55: 'test_out/contigs_55'
-}
-
-for kmer in kmers:
-    velvet(
-        reads  = 'test_out/reads_trimmed.txt',
-        outdir = kmers[kmer],
-        kmer   = kmer
-    )
-    
-
-
-# concatenate all contigs
-run('cat %s > %s' % (' '.join(i + '/Sequences' for i in kmers.values()), 'test_out/joined_contigs.txt'))
-
-
-# run final assembly
-velvet(
-    reads    = 'test_out/joined_contigs.txt',
-    outdir   = 'test_out/final_contigs',
-    kmer     = 35
+# create table connecting seed and subsystems
+# seed_sequence_number -> system;subsystem;subsubsystem;enzyme
+# use this later to make functions tables
+prepare_seed(
+    seed = 'db/seed.fasta',
+    peg  = 'db/subsystems2peg',
+    role = 'db/subsystems2role',
+    out  = 'db/seed_ss.txt'
 )
-
-# predict ORFs
-prodigal(
-    input  = 'test_out/final_contigs/Sequences',
-    out    = 'test_out/predicted_orfs' # prefix*
-)
+quit()
 
 # identify ORFs using phmmer
 phmmer(
-    query = 'test_out/predicted_orfs.faa',
+    query = 'out/orfs/predicted_orfs.faa',
     db    = 'db/seed.fasta',
-    out   = 'test_out/identified_proteins.txt'
-)
-
-quit()
-
-# separate unidentified ORFs
-get_unidentified_orfs(
-    orfs     = 'test_out/predicted_orfs.ffn',
-    proteins = 'test_out/identified_proteins.txt',
-    out      = 'test_out/unidentified_orfs.ffn'
+    out   = 'out/anno/proteins.txt'
 )
 
 # obtain coverage of ORFs
 orf_coverage = reference_assemble(
     query = 'reads.txt',
-    db    = 'predicted_orfs.ffn',
-    out   = 'reads_versus_orfs.txt'
+    db    = 'out/orfs/predicted_orfs.ffn',
+    out   = 'out/refs/reads_versus_orfs.txt'
 )
 
-# obtain coverage of taxonomy
-taxonomic_coverage = reference_assemble(
-    query = 'unidentified_orfs.txt',
-    db    = 'taxcollector.fasta',
-    out   = 'orfs_versus_tc.txt'
+
+
+# separate unidentified ORFs
+# these get clustered at 40% AA identity using cd-hit
+get_unidentified_orfs(
+    orfs     = 'out/predicted_orfs.ffn',
+    proteins = 'out/identified_proteins.txt',
+    out      = 'out/unidentified_orfs.ffn'
 )
+
+# align reads to taxcollector
+reference_assemble(
+    query = 'reads.txt',
+    db    = 'db/taxcollector.fa',
+    out   = 'out/reads_vs_taxcollector.txt'
+)
+
+# estimate average genome size and use to normalize?
 
 # make_subsystems_table()
 # make_phylogeny_table()
