@@ -52,8 +52,11 @@ def velvet(**ops):
     
     ohai('running velvet: %(reads)s, k = %(kmer)s' % ops)
     
-    run(velveth)
-    run(velveth)
+    run(velveth) # run hash algorithm
+    run(velveth) # run assembly algorithm
+
+    # optional, calculate N50 and generate PDF output
+    run('python misc/get_n50.py %(output)s' % ops)
 
 def reference_assemble(**orfs):
     ''' reference assemble using clc_ref_assemble_long '''

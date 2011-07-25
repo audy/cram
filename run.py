@@ -21,17 +21,17 @@ ohai('running pipeline!')
     d('anno'),
     d('refs')] ]
 
-## TRIM READS
-ohai('trimming sequences')
-sequences = (r for r in Dna(open(reads), type='fastq'))
-trimmed = (Trim.trim(r) for r in sequences)
-trimmed = (i for i in trimmed if len(i) > cutoff)
-
-with open(d('reads_trimmed.txt'), 'w') as handle:
-    for t in trimmed:
-        print >> handle, t.fasta
-        
-run('grep -c \'^>\' %s' % d('reads_trimmed.txt'))
+# ## TRIM READS
+# ohai('trimming sequences')
+# sequences = (r for r in Dna(open(reads), type='fastq'))
+# trimmed = (Trim.trim(r) for r in sequences)
+# trimmed = (i for i in trimmed if len(i) > cutoff)
+# 
+# with open(d('reads_trimmed.txt'), 'w') as handle:
+#     for t in trimmed:
+#         print >> handle, t.fasta
+#         
+# run('grep -c \'^>\' %s' % d('reads_trimmed.txt'))
 
 ## ASSEMBLE W/ VELVET
 kmers = {
