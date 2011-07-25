@@ -3,13 +3,6 @@
 
 from pipe import *
 
-# Define configuration:
-# TODO: read this from a config file? options?
-class Config:
-    cutoff = 70
-    out    = 'out'
-    reads  = 'reads.txt'
-
 # shorten names a bit
 cutoff = Config.cutoff
 out    = Config.out
@@ -22,22 +15,23 @@ d = get_outdir(Config.out)
 ohai('running pipeline!')
 
 ## MAKE DIRECTORIES
-dirs = [
+[ run('mkdir -p %s' % i) for i in [
     out,
     d('orfs'),
     d('anno'),
-    d('refs')]
-
-[ run('mkdir -p %s' % i) for i in dirs ]
+    d('refs')] ]
 
 ## TRIM READS
+ohai('trimming sequences')
 sequences = (r for r in Dna(open(reads), type='fastq'))
 trimmed = (Trim.trim(r) for r in sequences)
 trimmed = (i for i in trimmed if len(i) > cutoff)
 
-with open(out + '/reads_trimmed.txt', 'w') as handle:
+with open(d('reads_trimmed.txt'), 'w') as handle:
     for t in trimmed:
         print >> handle, t.fasta
+        
+run('grep -c \'^>\' %s' % d('reads_trimmed.txt'))
 
 ## ASSEMBLE W/ VELVET
 kmers = {
