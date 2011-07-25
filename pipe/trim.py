@@ -2,17 +2,24 @@ from dnaio import *
 
 class Trim():
     ''' The Famous Trim algorithm '''
+    # autodetect this!
+    
     def __init__(self, **kwargs):
         self.input = kwargs['input']
         self.output = kwargs['out']
+        self.machine = kwargs['machine']
+
     
     @classmethod
     def _get_coords(self, quality, **kwargs):
         ''' the trim2 algorithm '''
+        # classmethod vs. instancemethod?
         quality_cutoff = 20
+        offset = 33
+        
         _sum, _max, first, last, start, end = 0, 0, 0, 0, 0, 0
         for a, q in enumerate(quality):
-            _sum += (q - 64 - quality_cutoff)
+            _sum += (q - offset - quality_cutoff)
             if _sum > _max:
                 _max = _sum
                 end = a
@@ -71,6 +78,10 @@ class Trim():
 
 
 def test():
+    
+    # this is temporarily broken because Trim() doesn't have support for
+    # defining ascii offset of quality scores and these are for offset
+    # 64 (Illumina). I temporarily need 33.
     raw = \
 '''HWUSI-EAS163FR:13:2:1:4515:5372:0:1:A
 GCCGCGGTAACACGTAGGGCGCGAGCGTTGTCCGGAATTATTGGGCGTAAAGAGCTCGTAGGCGGCCTGTTGCGTGCGCTGTGAAAGCCG
@@ -93,4 +104,4 @@ ffffffffffaffffcfffafffafcfffffddfdPRdd]^bbbf_febaacafY^Wa^]b`XbcZJ_c\^XM
     assert record.quality == trimmed.quality
 
 
-test()
+#test()

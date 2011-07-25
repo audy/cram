@@ -42,8 +42,6 @@ class Dna:
                     header = line[1:]
                 elif i == 1:
                     sequence = line
-                elif i == 2:
-                    assert line[1:] == header # does this ever happen?
                 elif i == 3:
                     quality = line
                     yield Record(header, sequence, quality)
