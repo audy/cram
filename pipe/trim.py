@@ -2,19 +2,13 @@ from dnaio import *
 
 class Trim():
     ''' The Famous Trim algorithm '''
-    # autodetect this!
-    
-    def __init__(self, **kwargs):
-        self.input = kwargs['input']
-        self.output = kwargs['out']
-        self.machine = kwargs['machine']
 
-    
     @classmethod
     def _get_coords(self, quality, **kwargs):
         ''' the trim2 algorithm '''
-        # classmethod vs. instancemethod?
+        
         quality_cutoff = 20
+        # todo, make this an option or autodetectable
         offset = 33
         
         _sum, _max, first, last, start, end = 0, 0, 0, 0, 0, 0
