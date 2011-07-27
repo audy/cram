@@ -19,7 +19,8 @@ ohai('running pipeline!')
 #     out,
 #     d('orfs'),
 #     d('anno'),
-#     d('refs')] ]
+#     d('refs'),
+#     d('tables') ]
 # 
 # ## TRIM READS
 # ohai('trimming sequences')
@@ -34,7 +35,7 @@ ohai('running pipeline!')
 # 
 # run('grep -c \'^>\' %s' % d('reads_trimmed.txt'))
 # 
-# ASSEMBLE W/ VELVET
+# # ASSEMBLE W/ VELVET
 # kmers = {
 #      31: d('contigs_31'),
 #      51: d('contigs_51'),
@@ -50,65 +51,69 @@ ohai('running pipeline!')
 #     # calculate n50 and produce a histogram
 #     run('misc/n50.py %s contig_lenths_%s.pdf' % (kmers[kmer]/contigs.fa, kmer))
 # 
-# concatenate all contigs
-# TODO: remove duplicate contigs!!?
+# # concatenate all contigs
+# # TODO: remove duplicate contigs!!?
 # run('cat %s > %s' % (
 #     ' '.join(i + '/contigs.fa' for i in kmers.values()),
 #     d('joined_contigs.txt'))
 # )
-
-# run final assembly
+# 
+# # run final assembly
 # velvet(
 #     reads    = d('reads_trimmed.txt'),
 #     outdir   = d('final_contigs'),
 #     kmer     = 51
 # )
-
-# ## PREDICT OPEN READING FRAMES
+# 
+# # PREDICT OPEN READING FRAMES
 # prodigal(
 #     input  = d('final_contigs/contigs.fa'),
 #     out    = d('orfs/predicted_orfs') # prefix*
 # )
-
-# create table connecting seed and subsystems
-# seed_sequence_number -> system;subsystem;subsubsystem;enzyme
-# use this later to make functions tables
-
+# 
+# # create table connecting seed and subsystems
+# # seed_sequence_number -> system;subsystem;subsubsystem;enzyme
+# # use this later to make functions tables
 # prepare_seed(
 #     seed = 'db/seed.fasta',
 #     peg  = 'db/subsystems2peg',
 #     role = 'db/subsystems2role',
 #     out  = 'db/seed_ss.txt'
 # )
+#  
+# ## IDENTIFY ORFS WITH PHMMER
+# phmmer( 
+#     query = d('orfs/predicted_orfs.faa'),
+#     db    = 'db/seed.fasta',
+#     out   = d('anno/proteins.txt')
+# )
 # 
-## IDENTIFY ORFS WITH PHMMER
-phmmer( 
-    query = d('orfs/predicted_orfs.faa'),
-    db    = 'db/seed.fasta',
-    out   = d('anno/proteins.txt')
-)
-quit()
-## GET ORF COVERAGE
-orf_coverage = reference_assemble(
-    query = 'reads.txt',
-    db    = d('orfs/predicted_orfs.ffn'),
-    out   = d('refs/reads_versus_orfs.txt')
+# # flatten phmmer file (we only need top hit)
+# run('misc/flatten_phmmer.py anno/proteins.txt.table > anno/proteins_flattened.txt')
+# 
+# ## GET ORF COVERAGE
+# 
+# # reference assemble
+# reference_assemble( # clc specific
+#     query     = 'reads.fasta',
+#     reference = d('orfs/predicted_orfs.fna'),
+#     out       = d('refs/reads_versus_orfs.txt')
+# )
+
+# make coverage table
+make_coverage_table( # clc specific
+    reads     = 'reads.fasta',
+    reference = d('orfs/predicted_orfs.fna'),
+    table     = d('refs/table.txt'),
+    out       = d('tables/orfs_coverage.txt')
 )
 
-# separate unidentified ORFs
-# these get clustered at 40% AA identity using cd-hit
-get_unidentified_orfs(
-    orfs     = d('predicted_orfs.ffn'),
-    proteins = d('identified_proteins.txt'),
-    out      = d('unidentified_orfs.ffn')
-)
-
-# align reads to taxcollector
-reference_assemble(
-    query = 'reads.txt',
-    db    = 'db/taxcollector.fa',
-    out   = d('reads_vs_taxcollector.txt')
-)
+# # align reads to taxcollector
+# reference_assemble(
+#     query     = 'reads.txt',
+#     reference = 'db/taxcollector.fa',
+#     out       = d('reads_vs_taxcollector.txt')
+# )
 
 # estimate average genome size and use to normalize?
 
