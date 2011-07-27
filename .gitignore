@@ -1,4 +1,7 @@
 db/*
-test*
 bin/*
 *.pyc
+*.pdf
+all_lengths.txt
+out/*
+data/*
