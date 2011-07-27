@@ -42,4 +42,4 @@ if os.path.exists(commands.getoutput('which r')):
     
     print commands.getoutput('r --slave < histogram.r')
     print commands.getoutput('rm histogram.r')
-    print commands.getoutput(' '.join(['mv', 'Rplots.pdf', os.path.basename(sys.argv[1], '.pdf')]))
+    print commands.getoutput(' '.join(['mv', 'Rplots.pdf', sys.argv[2]]))
