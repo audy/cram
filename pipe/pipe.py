@@ -48,15 +48,12 @@ def velvet(**ops):
         ' %(reads)s',
         '> /dev/null']) % ops
     
-    velvetg = 'bin/velvetg %(output)s > /dev/null'
+    velvetg = 'bin/velvetg %(outdir)s > /dev/null' % ops
     
     ohai('running velvet: %(reads)s, k = %(kmer)s' % ops)
     
     run(velveth) # run hash algorithm
-    run(velveth) # run assembly algorithm
-
-    # optional, calculate N50 and generate PDF output
-    run('python misc/get_n50.py %(output)s' % ops)
+    run(velvetg) # run assembly algorithm
 
 def reference_assemble(**orfs):
     ''' reference assemble using clc_ref_assemble_long '''
@@ -73,7 +70,7 @@ def prodigal(**ops):
         '-i %(input)s',
         '-o %(out)s.gff',
         '-a %(out)s.faa',
-        '-d %(out)s.fnn',
+        '-d %(out)s.fna',
         '-p meta'
     ]) % ops
     
@@ -104,13 +101,19 @@ def phmmer(**ops):
         '-o /dev/null',
         '--tblout %(out)s.table',
         '-E 0.00001',
+        #'/dev/stdin',
         '%(query)s',
         '%(db)s'
     ]) % ops
     
-    ohai('running phmmer: %(query)s vs. %(db)s' % ops)
+    # gnu parallel method
+    parallel = "parallel --pipe --recstart '>' --progress -N1000"
     
+    
+    ohai('running phmmer: %(query)s vs. %(db)s' % ops)
+
     run(phmmer)
+    quit()
 
 def prepare_seed(**ops):
     ''' create table of seed_id -> subsystems '''
