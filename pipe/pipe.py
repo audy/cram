@@ -6,6 +6,7 @@ import sys
 def get_outdir(out):
     ''' append config to d '''
     def s(s):
+        # TODO make sure directories exist and if not, make them
         return out + '/' + s.lstrip('/')
     return s
 
@@ -60,7 +61,7 @@ def reference_assemble(**ops):
     
     # drm :(
     assert os.path.exists('clc.license')
-
+    
     clc = ' '.join([
       'bin/clc_ref_assemble_long',
       '-q %(query)s',
@@ -69,11 +70,11 @@ def reference_assemble(**ops):
       '-a local', # todo, make an option?
       '--cpus 16', # todo, autodetect.
       ]) % ops
-
+    
     ohai('running reference assembly %(query)s vs. %(reference)s')
     
     run(clc)
-
+    
     # generate assembly table
     assembly_table = 'bin/assembly_table -n -s %(out)s.clc > %(out)s' % ops
     run(assembly_table)
@@ -130,63 +131,9 @@ def phmmer(**ops):
     
     
     ohai('running phmmer: %(query)s vs. %(db)s' % ops)
-
+    
     run(phmmer)
     quit()
-
-def make_coverage_table(**ops):
-    ''' create table of reference sequence, no. hits '''
-    
-    reference = ops['reference']
-    table     = ops['table']
-    out       = ops['out']
-    
-    from itertools import count
-    from collections import defaultdict
-    
-    # get sequence # -> header from reference db
-    # * fix this for paired output!?
-    # * clc has a bug in table output, might not even need to do this.
-    n_to_counts = defaultdict(int) # { reference: reads that mapped to it }
-    with open(table) as handle:
-        for line in handle:
-            line = line.strip().split()
-            ref_n = int(line[5])
-            
-            n_to_counts[ref_n] += 1
-            
-    # convert back into regs dictionary
-    n_to_counts = dict(n_to_counts)
-    
-    # which names to keep?
-    keep = set(n_to_counts.keys())
-    
-    # get names of references that we care about
-    # XXX start counting at 1 or 0?
-    
-    c, n_to_name = count(), {}
-    n_to_name[-1] = 'unmatched'
-    
-    with open(reference) as handle:
-        for line in handle:
-            if line.startswith('>'):
-                n = c.next()
-                if n in keep:
-                    n_to_name[n] = line.lstrip('>').rstrip()
-                
-    # print coverage table
-    with open(out, 'w') as handle:
-        print >> handle, 'function\t%s' % table
-        for n in n_to_counts:
-            name = n_to_name[n]
-            count = n_to_counts[n]
-            print >> handle, '%s\t%s' % (name, count)
-    
-
-def generate_ss_table(**ops):
-    ''' generate a table containing subsystems and their coverage
-    with merged counts at higher levels'''
-    pass
 
 def prepare_seed(**ops):
     ''' create table of seed_id -> subsystems '''
@@ -229,10 +176,144 @@ def prepare_seed(**ops):
             if line.startswith('>'):
                 
                 fig = line.split()[0][1:]
-                
                 name = figs_to_name.get(fig, fig)
+                ss = name_to_ss.get(name, 'NA')
                 
-                ss = name_to_ss.get(name, [None]*4)
-                
-                print >> out, "%s\t%s;%s;%s;%s" % (fig, ss[0], ss[1], ss[2], name)
-  
+                if ss == 'NA':
+                    names = 'NA;%s' % name
+                else:
+                    names = '%s;%s;%s;%s' % (ss[0], ss[1], ss[2], name)
+                    
+                print >> out, "%s\t%s" % (fig, names)
+
+def make_coverage_table(**ops):
+    ''' create table of reference sequence, no. hits '''
+    
+    reference = ops['reference']
+    clc_table = ops['clc_table']
+    out       = ops['out']
+    phmmer    = ops['phmmer']
+    
+    from itertools import count
+    from collections import defaultdict
+    
+    # get sequence # -> header from reference db
+    # * fix this for paired output!?
+    # * clc has a bug in table output, might not even need to do this.
+    n_to_counts = defaultdict(int) # { reference: reads that mapped to it }
+    with open(clc_table) as handle:
+        for line in handle:
+            line = line.strip().split()
+            ref_n = int(line[5])
+            
+            n_to_counts[ref_n] += 1
+    
+    # convert back into regs dictionary
+    n_to_counts = dict(n_to_counts)
+    
+    # which names to keep?
+    keep = set(n_to_counts.keys())
+    
+    # get names of references that we care about
+    # XXX start counting at 1 or 0?
+    c, n_to_orf = count(), {}
+    n_to_orf[-1] = 'unmatched'
+    with open(reference) as handle:
+        for line in handle:
+            if line.startswith('>'):
+                n = c.next()
+                orf = line.lstrip('>').rstrip().split()[0]
+                if n in keep:
+                    n_to_orf[n] = orf
+    
+    # load phmmer output table to get figids from ORF names
+    orf_to_figid = {}
+    with open(phmmer) as handle:
+        for line in handle:
+            if line.startswith('#'): continue
+            line = line.strip().split()
+            
+            figid, orf = line[0], line[2]
+            
+            assert orf not in orf_to_figid
+            
+            orf_to_figid[orf] = figid
+    
+    # print coverage table
+    with open(out, 'w') as handle:
+        print >> handle, '# function\t%s' % clc_table
+        for n in n_to_counts:
+            orf = n_to_orf[n]
+            figid = orf_to_figid.get(orf, orf)
+
+            count = n_to_counts[n]
+            print >> handle, '%s\t%s' % (figid, count)
+
+
+def make_subsystems_table(**ops):
+    ''' converts a coverage table to a subsystems table given
+    the figid -> subsystems info '''
+    
+    # NOTE this may be more difficult with pairs.
+    
+    subsnames      = ops['subsnames']
+    coverage_table = ops['coverage_table']
+    out            = ops['out']
+    reads          = ops['reads']
+    
+    # get total number of reads (makes life easier)
+    # XXX this only works for FASTA, fix for FASTQ using DNAIO please :)
+    from itertools import count
+    c = count()
+    with open(reads) as handle:
+        for line in handle:
+            if line.startswith('>'):
+                total_reads = c.next()
+    
+    # load subs names
+    with open(subsnames) as handle:
+        fig_to_name = {}
+        for line in handle:
+            if line.startswith('#'): continue
+            
+            figid, name = line.strip().split('\t')
+            
+            # what if this happens?
+            assert figid not in fig_to_name
+
+            fig_to_name[figid] = name
+    
+    # the output table should look like this:
+    # sys_a,\t10
+    # sys_a;sys_a.1\t5
+    # sys_a;sys_a.2\t5 etc...
+    
+    # parse coverage table and output hierarchies based on SEED subsystems
+    from collections import defaultdict
+    merged_counts = defaultdict(int)
+    with open(coverage_table) as handle:
+        for line in handle:
+            if line.startswith('#'): continue
+            figid, count = line.strip().split('\t')
+            count = int(count)
+            
+            # use figid to get the ss name, or just keep the figid
+            # that usually means that the ORF was not identified
+            # in the SEED database and it's still useful to have
+            # them in the subsystems table. However, we append
+            # 'unidentified' at the beginning
+            subsystems = fig_to_name.get(figid, 'UNIDENTIFIED;' + figid).split(';')
+            
+            # This merges subsystem hierarchies and sums their counts
+            # TODO I really ought to create a test for this as it's pretty
+            # crucial and breakeable
+            for i in range(len(subsystems))[1:]:
+                hierarchy = ';'.join(subsystems[:i])
+                if hierarchy == '':
+                    hierarchy = 'TOTAL'
+                merged_counts[hierarchy] += count
+            
+    with open(out, 'w') as handle:
+        print >> handle, "TOTAL\t%s" % total_reads
+        for s in sorted(merged_counts, key = lambda x: merged_counts[x], reverse=True):
+            print >> handle, "%s\t%s" % (s, merged_counts[s])

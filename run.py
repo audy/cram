@@ -74,12 +74,12 @@ ohai('running pipeline!')
 # # create table connecting seed and subsystems
 # # seed_sequence_number -> system;subsystem;subsubsystem;enzyme
 # # use this later to make functions tables
-# prepare_seed(
-#     seed = 'db/seed.fasta',
-#     peg  = 'db/subsystems2peg',
-#     role = 'db/subsystems2role',
-#     out  = 'db/seed_ss.txt'
-# )
+prepare_seed(
+    seed = 'db/seed.fasta',
+    peg  = 'db/subsystems2peg',
+    role = 'db/subsystems2role',
+    out  = 'db/seed_ss.txt'
+)
 #  
 # ## IDENTIFY ORFS WITH PHMMER
 # phmmer( 
@@ -101,19 +101,38 @@ ohai('running pipeline!')
 # )
 
 # make coverage table
-make_coverage_table( # clc specific
-    reads     = 'reads.fasta',
-    reference = d('orfs/predicted_orfs.fna'),
-    table     = d('refs/table.txt'),
-    out       = d('tables/orfs_coverage.txt')
+# make_coverage_table( # clc specific
+#     reads     = 'reads.fasta',
+#     reference = d('orfs/predicted_orfs.fna'),
+#     clc_table = d('refs/reads_versus_orfs.txt'),
+#     phmmer    = d('anno/proteins_flat.txt'),
+#     out       = d('tables/orfs_coverage.txt')
+# )
+# 
+# # make subsystems table from coverage table
+# make_subsystems_table(
+#     reads          = 'data/reads.fasta',
+#     subsnames      = 'db/seed_ss.txt',
+#     coverage_table = d('tables/orfs_coverage.txt'),
+#     out            = d('tables/subsystems_coverage.txt')
+# )
+
+# ## GET OTU COVERAGE
+reference_assemble(
+    query     = 'reads.txt',
+    reference = 'db/taxcollector.fa',
+    out       = d('refs/reads_vs_taxcollector.txt'),
 )
 
-# # align reads to taxcollector
-# reference_assemble(
-#     query     = 'reads.txt',
-#     reference = 'db/taxcollector.fa',
-#     out       = d('reads_vs_taxcollector.txt')
-# )
+make_coverage_Table(
+    reads = 'reads.fasta'
+    reference = d('db/taxcollector.fa'),
+    clc_table = d('refs/16s_table.txt')
+)
+
+# TODO make OTU abundancy matrices
+# *NOTE I should just make those scripts part of
+# taxcollector :\
 
 # estimate average genome size and use to normalize?
 
