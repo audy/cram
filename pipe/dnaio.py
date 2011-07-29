@@ -10,6 +10,10 @@ class Dna:
     def __exit__(self, *args):
         self.handle.close()
         
+    def close(self):
+        ''' close the handle '''
+        self.handle.close()
+        
     def __iter__(self):
         ''' iterate through file based on type '''
         

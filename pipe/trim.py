@@ -9,7 +9,7 @@ class Trim():
         
         quality_cutoff = 20
         # todo, make this an option or autodetectable
-        offset = 33
+        offset = 64
         
         _sum, _max, first, last, start, end = 0, 0, 0, 0, 0, 0
         for a, q in enumerate(quality):

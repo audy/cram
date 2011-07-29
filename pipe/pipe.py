@@ -3,6 +3,9 @@
 import os
 import sys
 
+from trim import *
+from dnaio import *
+
 def get_outdir(out):
     ''' append config to d '''
     def s(s):
@@ -36,6 +39,44 @@ def run(cmd):
         okay(cmd)
     else:
         ohno(cmd)
+
+def trim_pairs(**ops):
+    ''' trim paired reads, output interleaved fastq and singletons files '''
+    
+    input_format = ops.get('input_format', 'qseq')
+    
+    left_mates  = Dna(open(ops['left_mates']), type=input_format)
+    right_mates = Dna(open(ops['right_mates']), type=input_format)
+    out_left    = open(ops['out_left'], 'w')
+    out_right   = open(ops['out_right'], 'w')
+    out_trimmed = open(ops['out'], 'w')
+    cutoff      = int(ops['cutoff'])
+    
+    from itertools import izip
+    
+    for left, right in izip(left_mates, right_mates):
+        left_trimmed, right_trimmed = Trim.trim(left), Trim.trim(right)
+        
+        if len(right_trimmed) < cutoff and len(left_trimmed) < cutoff:
+            # both reads suck
+            continue
+        elif len(right_trimmed) < cutoff:
+            # keep left pair
+            print >> out_left, left_trimmed.fastq
+        elif len(left_trimmed) < cutoff:
+            # keep right pair
+            print >> out_right, right_trimmed.fastq
+        else:
+            # both are good, keep both!
+            print >> out_trimmed, left_trimmed.fastq
+            print >> out_trimmed, right_trimmed.fastq
+    
+    # way too many file handles :[
+    out_left.close()
+    out_right.close()
+    out_trimmed.close()
+    left_mates.close()
+    right_mates.close()
 
 def velvet(**ops):
     ''' run velvet assembly '''
@@ -183,7 +224,7 @@ def prepare_seed(**ops):
                     names = 'NA;%s' % name
                 else:
                     names = '%s;%s;%s;%s' % (ss[0], ss[1], ss[2], name)
-                    
+                
                 print >> out, "%s\t%s" % (fig, names)
 
 def make_coverage_table(**ops):
@@ -245,7 +286,7 @@ def make_coverage_table(**ops):
         for n in n_to_counts:
             orf = n_to_orf[n]
             figid = orf_to_figid.get(orf, orf)
-
+            
             count = n_to_counts[n]
             print >> handle, '%s\t%s' % (figid, count)
 
@@ -280,7 +321,7 @@ def make_subsystems_table(**ops):
             
             # what if this happens?
             assert figid not in fig_to_name
-
+            
             fig_to_name[figid] = name
     
     # the output table should look like this:
@@ -312,7 +353,7 @@ def make_subsystems_table(**ops):
                 if hierarchy == '':
                     hierarchy = 'TOTAL'
                 merged_counts[hierarchy] += count
-            
+    
     with open(out, 'w') as handle:
         print >> handle, "TOTAL\t%s" % total_reads
         for s in sorted(merged_counts, key = lambda x: merged_counts[x], reverse=True):
