@@ -6,7 +6,7 @@ cd bin
     # INSTALL VELVET
     git clone https://github.com/dzerbino/velvet.git
     cd velvet
-        make velveth velvetg MAXKMERLENGTH=71 OPENMP=1
+        make velveth velvetg MAXKMERLENGTH=71 OPENMP=1 LONGSEQUENCES=1
         mv velvetg ..
         mv velveth ..
     cd ..
