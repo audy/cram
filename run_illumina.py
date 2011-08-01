@@ -22,66 +22,56 @@ ohai('running pipeline!')
     d('refs'),
     d('tables') ] ]
 
-
 ## TRIM READS (pairedly)
-ohai('trimming pairs')
-
-trim_pairs(
-    left_mates  = left_mates,
-    right_mates = right_mates,
-    out_left    = d('singletons_left.fastq'),
-    out_right   = d('singletons_right.fastq'),
-    out         = d('reads_trimmed.fastq'),
-    cutoff      = cutoff
-)
-
-# ohai('trimming sequences')
-# sequences = (r for r in Dna(open(reads), type='qseq'))
-# trimmed = (Trim.trim(r) for r in sequences)
-# # filter by minimum length (no need for this w/ Velvet?)
-# trimmed = (i for i in trimmed if len(i) > cutoff)
-#  
-# with open(d('reads_trimmed.txt'), 'w') as handle:
-#     for t in trimmed:
-#         print >> handle, t.fasta
+# ohai('trimming pairs')
 # 
-# run('grep -c \'^>\' %s' % d('reads_trimmed.txt'))
+# trim_pairs(
+#     left_mates  = left_mates,
+#     right_mates = right_mates,
+#     out_left    = d('singletons_left.fastq'),
+#     out_right   = d('singletons_right.fastq'),
+#     out         = d('reads_trimmed.fastq'),
+#     cutoff      = cutoff
+# )
 # 
 # # ASSEMBLE W/ VELVET
-# kmers = {
-#      31: d('contigs_31'),
-#      51: d('contigs_51'),
-#      71: d('contigs_71')
-# }
-# 
+kmers = {
+     31: d('contigs_31'),
+     51: d('contigs_51'),
+     71: d('contigs_71')
+}
+#  
 # for kmer in kmers:
 #     velvet(
-#         reads  = d('reads_trimmed.txt'),
+#         reads = [
+#             ('fastq', 'shortPaired', d('reads_trimmed.fastq')),
+#             ('fastq', 'short', d('singletons_left.fastq')),
+#             ('fastq', 'short', d('singletons_right.fastq'))],
 #         outdir = kmers[kmer],
 #         kmer   = kmer
 #     )
-#     # calculate n50 and produce a histogram
-#     run('misc/n50.py %s contig_lenths_%s.pdf' % (kmers[kmer]/contigs.fa, kmer))
-# 
-# # concatenate all contigs
-# # TODO: remove duplicate contigs!!?
+    # calculate n50 and produce a histogram
+    
+
+# concatenate all contigs
+# TODO: remove duplicate contigs!!?
 # run('cat %s > %s' % (
 #     ' '.join(i + '/contigs.fa' for i in kmers.values()),
 #     d('joined_contigs.txt'))
 # )
-# 
-# # run final assembly
-# velvet(
-#     reads    = d('reads_trimmed.txt'),
-#     outdir   = d('final_contigs'),
-#     kmer     = 51
-# )
-# 
-# # PREDICT OPEN READING FRAMES
-# prodigal(
-#     input  = d('final_contigs/contigs.fa'),
-#     out    = d('orfs/predicted_orfs') # prefix*
-# )
+
+# run final assembly
+velvet(
+    reads    = [('fasta', 'short', d('joined_contigs.txt'))],
+    outdir   = d('final_contigs'),
+    kmer     = 51
+)
+
+# PREDICT OPEN READING FRAMES
+prodigal(
+    input  = d('final_contigs/contigs.fa'),
+    out    = d('orfs/predicted_orfs') # prefix*
+)
 # 
 # # create table connecting seed and subsystems
 # # seed_sequence_number -> system;subsystem;subsubsystem;enzyme
