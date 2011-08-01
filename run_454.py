@@ -60,7 +60,7 @@ run('cat %s > %s' % (
 
 # run final assembly
 velvet(
-    reads    = d('reads_trimmed.txt'),
+    reads    = d('joined_contigs.txt'),
     outdir   = d('final_contigs'),
     kmer     = 51
 )
