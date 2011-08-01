@@ -79,16 +79,22 @@ def trim_pairs(**ops):
     right_mates.close()
 
 def velvet(**ops):
-    ''' run velvet assembly '''
+    ''' run velvet assembly
+        outdir = 'output_directory',
+        reads = [
+            ('fastq', 'short', 'filename.fastq'),
+            ('fastq', 'paired', 'paired_reads.fastq'), ...
+            ],
+        kmer = 31, # see velvet readme
+    '''
+    read_ops = ['-%s -%s %s' % r for r in ops['reads'] ]
     
-    velveth = ' '.join([
+    cmd = ' '.join([
         'bin/velveth',
         '%(outdir)s',
-        '%(kmer)s',
-        '-fasta',
-        '-short',
-        ' %(reads)s',
-        '> /dev/null']) % ops
+        '%(kmer)s']) % ops
+        
+    velveth = cmd + ' ' + ' '.join(read_ops) + '>/dev/null'
     
     velvetg = 'bin/velvetg %(outdir)s > /dev/null' % ops
     
