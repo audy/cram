@@ -61,7 +61,7 @@ run('cat %s > %s' % (
 
 # run final assembly
 velvet(
-    reads    = [('fasta', 'short', d('joined_contigs.txt'))],
+    reads    = [('fasta', 'long', d('joined_contigs.txt'))],
     outdir   = d('final_contigs'),
     kmer     = 51
 )
