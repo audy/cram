@@ -7,8 +7,7 @@ import os
 class Config:
     cutoff = 70
     out    = 'out'
-#    reads  = glob('data/*.fastq')
-
+    reads  = glob('data/*.fast*')
     
     if type(reads) == list:
         reads = reads[0]

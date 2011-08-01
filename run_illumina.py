@@ -54,11 +54,10 @@ kmers = {
     
 
 # concatenate all contigs
-# TODO: remove duplicate contigs!!?
-# run('cat %s > %s' % (
-#     ' '.join(i + '/contigs.fa' for i in kmers.values()),
-#     d('joined_contigs.txt'))
-# )
+run('cat %s > %s' % (
+    ' '.join(i + '/contigs.fa' for i in kmers.values()),
+    d('joined_contigs.txt'))
+)
 
 # run final assembly
 velvet(

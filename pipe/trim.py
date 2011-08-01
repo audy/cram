@@ -8,12 +8,10 @@ class Trim():
         ''' the trim2 algorithm '''
         
         quality_cutoff = 20
-        # todo, make this an option or autodetectable
-        offset = 64
         
         _sum, _max, first, last, start, end = 0, 0, 0, 0, 0, 0
         for a, q in enumerate(quality):
-            _sum += (q - offset - quality_cutoff)
+            _sum += (q - quality_cutoff)
             if _sum > _max:
                 _max = _sum
                 end = a
@@ -34,9 +32,6 @@ class Trim():
         # truncate sequence and quality accordingly
         sequence = record.sequence[coords[0]:coords[1]]
         quality = record.quality[coords[0]:coords[1]]
-        
-        # create quality string
-        quality = [ chr(i) for i in quality ]
         
         # quick test
         assert len(sequence) == len(quality)
@@ -90,12 +85,9 @@ HWUSI-EAS163FR:13:2:1:4515:5372:0:1:A
 ffffffffffaffffcfffafffafcfffffddfdPRdd]^bbbf_febaacafY^Wa^]b`XbcZJ_c\^XM
 '''.split('\n')
     
-    record = Record(raw[0], raw[1], raw[3])
-    trimmed = Record(trimmed[0], trimmed[1], trimmed[3])
+    record = Record(raw[0], raw[1], [ (ord(i) - 64) for i in raw[3] ])
+    trimmed = Record(trimmed[0], trimmed[1], [ ord(i) - 64 for i in trimmed[3] ])
     record = Trim.trim(record)
     
     assert record.sequence == trimmed.sequence
     assert record.quality == trimmed.quality
-
-
-#test()

@@ -3,8 +3,15 @@ class Dna:
     def __init__(self, handle, type='fasta'):
         self.handle = handle
         self.type = type
+        if self.type == 'fastq':
+            self.offset = 33
+        elif self.type == 'qseq':
+            self.offset = 64
+        else:
+            self.offset = None
         
     def __enter__(self, *args):
+        ''' So with statements may be used '''
         pass
         
     def __exit__(self, *args):
@@ -47,7 +54,7 @@ class Dna:
                 elif i == 1:
                     sequence = line
                 elif i == 3:
-                    quality = line
+                    quality = [ (ord(i) - self.offset) for i in line ]
                     yield Record(header, sequence, quality)
                     
         # QSEQ FILES (Illumina)
@@ -71,9 +78,10 @@ class Record:
         self.sequence = args[1]
         if len(args) == 3:
             self.type = 'fastq'
-            self.quality = [ ord(i) for i in args[2] ]
+            self.quality = [ int(i) for i in args[2] ]
         else:
             self.type = 'fasta'
+            self.quality = None
     
     @property
     def fasta(self):
@@ -83,15 +91,13 @@ class Record:
     @property
     def fastq(self):
         ''' return fastq formatted string '''
-        try:
-            self.quality
-        except AttributeError:
-            raise IOError, 'cant make fastq out of fasta file!'
+        if self.quality == None:
+            raise IOError, 'record does not contain quality information'
         
         return '@%s\n%s\n+%s\n%s' % (self.header,
             self.sequence.replace('.', 'N'),
             self.header,
-            ''.join(chr(i) for i in self.quality))
+            ''.join(chr(i+33) for i in self.quality))
             
     @property
     def qseq(self):

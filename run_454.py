@@ -20,12 +20,13 @@ ohai('running pipeline!')
     d('orfs'),
     d('anno'),
     d('refs'),
-    d('tables') ]
+    d('tables') ] ]
 
 ## TRIM READS
 ohai('trimming sequences')
 sequences = (r for r in Dna(open(reads), type='fastq'))
 trimmed = (Trim.trim(r) for r in sequences)
+
 # filter by minimum length (no need for this w/ Velvet?)
 trimmed = (i for i in trimmed if len(i) > cutoff)
  
@@ -44,15 +45,14 @@ kmers = {
 
 for kmer in kmers:
     velvet(
-        reads  = d('reads_trimmed.txt'),
+        reads  = [('fastq', 'short', d('reads_trimmed.txt'))],
         outdir = kmers[kmer],
         kmer   = kmer
     )
     # calculate n50 and produce a histogram
-    run('misc/n50.py %s contig_lenths_%s.pdf' % (kmers[kmer]/contigs.fa, kmer))
+    #run('misc/n50.py %s contig_lenths_%s.pdf' % (kmers[kmer]/contigs.fa, kmer))
 
 # concatenate all contigs
-# TODO: remove duplicate contigs!!?
 run('cat %s > %s' % (
     ' '.join(i + '/contigs.fa' for i in kmers.values()),
     d('joined_contigs.txt'))
@@ -60,7 +60,7 @@ run('cat %s > %s' % (
 
 # run final assembly
 velvet(
-    reads    = d('joined_contigs.txt'),
+    reads    = [('fasta', 'long', d('joined_contigs.txt'))],
     outdir   = d('final_contigs'),
     kmer     = 51
 )
@@ -125,7 +125,7 @@ reference_assemble(
 )
 
 make_coverage_Table(
-    reads = 'reads.fasta'
+    reads = 'reads.fasta',
     reference = d('db/taxcollector.fa'),
     clc_table = d('refs/16s_table.txt')
 )
