@@ -49,18 +49,10 @@ for kmer in kmers:
         outdir = kmers[kmer],
         kmer   = kmer
     )
-    # calculate n50 and produce a histogram
-    #run('misc/n50.py %s contig_lenths_%s.pdf' % (kmers[kmer]/contigs.fa, kmer))
-
-# concatenate all contigs
-run('cat %s > %s' % (
-    ' '.join(i + '/contigs.fa' for i in kmers.values()),
-    d('joined_contigs.txt'))
-)
-
+    
 # run final assembly
 velvet(
-    reads    = [('fasta', 'long', d('joined_contigs.txt'))],
+    reads    = [('fasta', 'long', d('contigs_%s' % k)) for k in kmers],
     outdir   = d('final_contigs'),
     kmer     = 51
 )
