@@ -173,14 +173,8 @@ def phmmer(**ops):
         '%(db)s'
     ]) % ops
     
-    # gnu parallel method
-    parallel = "parallel --pipe --recstart '>' --progress -N1000"
-    
-    
     ohai('running phmmer: %(query)s vs. %(db)s' % ops)
-    
     run(phmmer)
-    quit()
 
 def prepare_seed(**ops):
     ''' create table of seed_id -> subsystems '''
