@@ -19,7 +19,7 @@ bin/phmmer: bin
 	curl -O http://selab.janelia.org/software/hmmer3/3.0/hmmer-3.0.tar.gz
 	tar -zxvf hmmer-3.0.tar.gz
 	cd hmmer-3.0; ./configure; make; cd -
-	mv hmmer-3.0/phmmer bin/
+	mv hmmer-3.0/src/phmmer bin/
 	rm -r hmmer-3.0
 
 all: bin bin/velvetg bin/prodigal bin/phmmer
