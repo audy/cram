@@ -12,7 +12,13 @@ bin/prodigal: bin
 	curl -O http://prodigal.googlecode.com/files/prodigal.v2_00.tar.gz
 	tar -zxvf prodigal.v2_00.tar.gz
 	make -C prodigal.v2_00
-	mv prodigal bin
+	mv prodigal.v2_00/prodigal bin/
 	rm -rf prodigal.v2_00*
 
-all: bin bin/velvetg bin/prodigal
+bin/phmmer: bin
+	curl -O http://selab.janelia.org/software/hmmer3/3.0/hmmer-3.0.tar.gz
+	tar -zxvf hmmer-3.0.tar.gz
+	cd hmmer-3.0; ./configure; make; cd -
+	rm -r hmmer-3.0
+
+all: bin bin/velvetg bin/prodigal bin/phmmer
