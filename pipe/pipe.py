@@ -30,7 +30,7 @@ def ohno(s):
     c = '\033[91m'
     e = '\033[0m'
     print ' %s✖%s %s' % (c, e, s)
-    quit()
+    quit(1)
 
 def run(cmd):
     ''' runs a system command '''
