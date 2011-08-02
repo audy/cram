@@ -11,7 +11,7 @@ reads  = glob('data/*')[0]
 
 # Creates a simple function to prepend the output directory
 # to the directory/filename you specify
-d = get_outdir(Config.out)
+d = get_outdir('out')
 
 ohai('running pipeline!')
 
