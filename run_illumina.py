@@ -34,60 +34,57 @@ ohai('running pipeline!')
 #     cutoff      = cutoff
 # )
 # 
+
 # # ASSEMBLE W/ VELVET
 kmers = {
      31: d('contigs_31'),
      51: d('contigs_51'),
      71: d('contigs_71')
 }
-#  
+
 # for kmer in kmers:
 #     velvet(
 #         reads = [
 #             ('fastq', 'shortPaired', d('reads_trimmed.fastq')),
-#             ('fastq', 'short', d('singletons_left.fastq')),
-#             ('fastq', 'short', d('singletons_right.fastq'))],
+#             # ('fastq', 'short', d('singletons_left.fastq')),
+#             # ('fastq', 'short', d('singletons_right.fastq'))
+#         ],
 #         outdir = kmers[kmer],
 #         kmer   = kmer
 #     )
-    # calculate n50 and produce a histogram
-    
-
-# concatenate all contigs
-run('cat %s > %s' % (
-    ' '.join(i + '/contigs.fa' for i in kmers.values()),
-    d('joined_contigs.txt'))
-)
 
 # run final assembly
-velvet(
-    reads    = [('fasta', 'long', d('joined_contigs.txt'))],
-    outdir   = d('final_contigs'),
-    kmer     = 51
-)
+# type of assembly depends on whether or not contigs from first
+# 3 assemblies are actually long.
+
+# velvet(
+#     reads    = [('fasta', 'long', d('contigs_%s/contigs.fa' % k)) for k in kmers],
+#     outdir   = d('final_contigs'),
+#     kmer     = 51
+# )
 
 # PREDICT OPEN READING FRAMES
 prodigal(
     input  = d('final_contigs/contigs.fa'),
     out    = d('orfs/predicted_orfs') # prefix*
 )
-# 
+
 # # create table connecting seed and subsystems
 # # seed_sequence_number -> system;subsystem;subsubsystem;enzyme
 # # use this later to make functions tables
-# prepare_seed(
-#     seed = 'db/seed.fasta',
-#     peg  = 'db/subsystems2peg',
-#     role = 'db/subsystems2role',
-#     out  = 'db/seed_ss.txt'
-# )
-#  
-# ## IDENTIFY ORFS WITH PHMMER
-# phmmer( 
-#     query = d('orfs/predicted_orfs.faa'),
-#     db    = 'db/seed.fasta',
-#     out   = d('anno/proteins.txt')
-# )
+prepare_seed(
+    seed = 'db/seed.fasta',
+    peg  = 'db/subsystems2peg',
+    role = 'db/subsystems2role',
+    out  = 'db/seed_ss.txt'
+)
+ 
+## IDENTIFY ORFS WITH PHMMER
+phmmer( 
+    query = d('orfs/predicted_orfs.faa'),
+    db    = 'db/seed.fasta',
+    out   = d('anno/proteins.txt')
+)
 # 
 # # flatten phmmer file (we only need top hit)
 # run('misc/flatten_phmmer.py anno/proteins.txt.table > anno/proteins_flattened.txt')
