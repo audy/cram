@@ -40,6 +40,6 @@ if os.path.exists(commands.getoutput('which r')):
     with open('histogram.r', 'w') as handle:
       handle.write(histogram_calculator)
     
-    print commands.getoutput('r --slave < histogram.r')
-    print commands.getoutput('rm histogram.r')
-    print commands.getoutput(' '.join(['mv', 'Rplots.pdf', sys.argv[2]]))
+    commands.getoutput('r --slave < histogram.r')
+    commands.getoutput('rm histogram.r')
+    commands.getoutput(' '.join(['mv', 'Rplots.pdf', sys.argv[2]]))
