@@ -7,7 +7,7 @@ import os
 class Config:
     cutoff = 70
     out    = 'out'
-    reads  = glob('data/*.fast*')
+    reads  = glob('data/*')
     
     if type(reads) == list:
         reads = reads[0]
