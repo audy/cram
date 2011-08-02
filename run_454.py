@@ -2,11 +2,12 @@
 # encoding: utf-8
 
 from pipe import *
+from glob import glob
 
 # shorten names a bit
-cutoff = Config.cutoff
-out    = Config.out
-reads  = Config.reads
+cutoff = 70
+out    = 'out'
+reads  = glob('data/*')[0]
 
 # Creates a simple function to prepend the output directory
 # to the directory/filename you specify
