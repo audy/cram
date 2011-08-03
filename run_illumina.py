@@ -3,6 +3,10 @@
 
 from pipe import *
 
+# check if user ran make    
+if not os.path.exists('bin'):
+    ohno('bin/ doesn\'t exist. Did you run make?')
+
 cutoff = 70
 out    = 'out'
 left_mates = 'data/s71.qseq'
@@ -22,9 +26,6 @@ ohai('running pipeline!')
     d('refs'),
     d('tables') ] ]
 
-# TRIM READS (pairedly)
-ohai('trimming pairs')
-
 trim_pairs(
     left_mates  = left_mates,
     right_mates = right_mates,
@@ -33,7 +34,6 @@ trim_pairs(
     out         = d('reads_trimmed.fastq'),
     cutoff      = cutoff
 )
-
 
 # ASSEMBLE W/ VELVET
 kmers = {
@@ -123,7 +123,7 @@ reference_assemble(
 )
 
 make_coverage_Table(
-    reads = 'reads.fasta'
+    reads = 'reads.fasta',
     reference = d('db/taxcollector.fa'),
     clc_table = d('refs/16s_table.txt')
 )

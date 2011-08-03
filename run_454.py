@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import os
 from pipe import *
 from glob import glob
 
@@ -16,7 +17,7 @@ d = get_outdir('out')
 ohai('running pipeline!')
 
 ## MAKE DIRECTORIES
-[ run('mkdir -p %s' % i) for i in [
+[ run('mkdir -p %s' % i, generates=i) for i in [
     out,
     d('orfs'),
     d('anno'),
@@ -24,18 +25,19 @@ ohai('running pipeline!')
     d('tables') ] ]
 
 ## TRIM READS
-ohai('trimming sequences')
-sequences = (r for r in Dna(open(reads), type='fastq'))
-trimmed = (Trim.trim(r) for r in sequences)
+if not os.path.exists(d('reads_trimmed.fastq')):
+    ohai('trimming sequences')
+    sequences = (r for r in Dna(open(reads), type='fastq'))
+    trimmed = (Trim.trim(r) for r in sequences)
 
-# filter by minimum length (no need for this w/ Velvet?)
-trimmed = (i for i in trimmed if len(i) > cutoff)
+    # filter by minimum length (no need for this w/ Velvet?)
+    trimmed = (i for i in trimmed if len(i) > cutoff)
  
-with open(d('reads_trimmed.txt'), 'w') as handle:
-    for t in trimmed:
-        print >> handle, t.fasta
-
-run('grep -c \'^>\' %s' % d('reads_trimmed.txt'))
+    with open(d('reads_trimmed.fastq'), 'w') as handle:
+        for t in trimmed:
+            print >> handle, t.fasta
+else:
+    ohai('trimming sequences [skipping]')
 
 # ASSEMBLE W/ VELVET
 kmers = {
@@ -46,7 +48,7 @@ kmers = {
 
 for kmer in kmers:
     velvet(
-        reads  = [('fastq', 'short', d('reads_trimmed.txt'))],
+        reads  = [('fastq', 'short', d('reads_trimmed.fastq'))],
         outdir = kmers[kmer],
         kmer   = kmer
     )

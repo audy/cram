@@ -6,6 +6,8 @@ import sys
 from trim import *
 from dnaio import *
 
+# TODO fix colors, my colorscheme is weird and they look wrong on all other terminals.
+
 def get_outdir(out):
     ''' append config to d '''
     def s(s):
@@ -17,7 +19,7 @@ def ohai(s):
     ''' simple status message '''
     c = '\033[96m'
     e = '\033[0m'
-    print ' %s✪ %s%s' % (c, s, e)
+    print ' %s✪ %s%s' % (c, s, e),
 
 def okay(s):
     ''' successfully did something '''
@@ -29,19 +31,42 @@ def ohno(s):
     ''' did something and AAH! failure! '''
     c = '\033[91m'
     e = '\033[0m'
-    print ' %s✖%s %s' % (c, e, s)
+    print '\n %s✖%s %s' % (c, e, s)
     quit(1)
 
-def run(cmd):
-    ''' runs a system command '''
+def run(cmd, generates=False):
+    ''' runs a system command, unless output exists '''
+    
+    # check if output already exists, skip if it does.
+    if generates:
+        if type(generates) == str:
+                generates = [generates]
+        for f in generates:
+            if os.path.exists(f):
+                okay('skipping')
+                return
+    
     res = os.system(cmd)
     if res == 0:
-        okay(cmd)
+        if generates:
+            okay('complete')
+        else:
+            okay(cmd)
     else:
+        if generates:
+            for f in generates:
+                if os.path.exists(f):
+                    os.unlink(f)
         ohno(cmd)
 
 def trim_pairs(**ops):
     ''' trim paired reads, output interleaved fastq and singletons files '''
+    
+    ohai('trimming pairs')
+    for f in [ops['out_left'], ops['out_right'], ops['out']]:
+        if os.path.exists(f):
+            okay('skipping!')
+            return
     
     input_format = ops.get('input_format', 'qseq')
     
@@ -95,19 +120,18 @@ def velvet(**ops):
         '%(kmer)s']) % ops
         
     velveth = cmd + ' ' + ' '.join(read_ops) + '>/dev/null'
-    
     velvetg = 'bin/velvetg %(outdir)s > /dev/null' % ops
     
-    ohai('running velvet: %(reads)s, k = %(kmer)s' % ops)
-    
-    run(velveth) # run hash algorithm
-    run(velvetg) # run assembly algorithm
+    ohai('running velveth: %(reads)s, k = %(kmer)s' % ops)
+    run(velveth, generates=ops['outdir']) # run hash algorithm
+    ohai('running velvetg: %(outdir)s' % ops)
+    run(velvetg, generates=ops['outdir'] + '/contigs.fa') # run assembly algorithm
 
 def reference_assemble(**ops):
     ''' reference assemble using clc_ref_assemble_long '''
     
-    # drm :(
-    assert os.path.exists('clc.license')
+    if not s.path.exists('clc.license'):
+        ohno('CLC license file needs to be present in: %s' % os.getcwd())
     
     clc = ' '.join([
       'bin/clc_ref_assemble_long',
@@ -119,12 +143,11 @@ def reference_assemble(**ops):
       ]) % ops
     
     ohai('running reference assembly %(query)s vs. %(reference)s')
-    
-    run(clc)
+    run(clc, generates=out + '.clc')
     
     # generate assembly table
     assembly_table = 'bin/assembly_table -n -s %(out)s.clc > %(out)s' % ops
-    run(assembly_table)
+    run(assembly_table, generates="%(out)s.clc" % ops)
 
 
 def prodigal(**ops):
@@ -142,8 +165,7 @@ def prodigal(**ops):
     ]) % ops
     
     ohai('running prodigal: %(input)s' % ops)
-    
-    run(prodigal)
+    run(prodigal, generates=[ops['out'] + i for i in ('.gff', '.faa', '.fna')])
 
 def phmmer(**ops):
     ''' run phmmer '''
@@ -174,13 +196,16 @@ def phmmer(**ops):
     ]) % ops
     
     ohai('running phmmer: %(query)s vs. %(db)s' % ops)
-    run(phmmer)
+    run(phmmer, generates=out + '.table')
 
 def prepare_seed(**ops):
     ''' create table of seed_id -> subsystems '''
     
-    ohai('generating subsystem table %(out)s from %(seed)s' % ops)
-    
+    ohai('generating subsystems table')
+    if os.path.exists(ops['out']):
+        okay('skipping')
+        return
+        
     # TODO work out better fig id parsing?
     
     # load subsystems from figids using subsystems2peg
@@ -234,6 +259,11 @@ def make_coverage_table(**ops):
     clc_table = ops['clc_table']
     out       = ops['out']
     phmmer    = ops['phmmer']
+    
+    ohai('creating coverage table')
+    if os.path.exists(out):
+        okay('skipping')
+        return
     
     from itertools import count
     from collections import defaultdict
@@ -301,6 +331,11 @@ def make_subsystems_table(**ops):
     coverage_table = ops['coverage_table']
     out            = ops['out']
     reads          = ops['reads']
+    
+    ohai('creating subsystems table')
+    if os.path.exists(out):
+        okay('skipping')
+        return
     
     # get total number of reads (makes life easier)
     # XXX this only works for FASTA, fix for FASTQ using DNAIO please :)
