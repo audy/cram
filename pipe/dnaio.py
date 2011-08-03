@@ -64,6 +64,7 @@ class Dna:
                 header = ':'.join(line[:7])
                 sequence = line[8]
                 quality = line[9]
+                quality = [ (ord(i) - self.offset) for i in quality ]
                 
                 yield Record(header, sequence, quality)
                     
