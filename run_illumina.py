@@ -115,7 +115,7 @@ make_subsystems_table(
     out            = d('tables/subsystems_coverage.txt')
 )
 
-# ## GET OTU COVERAGE
+# GET OTU COVERAGE
 reference_assemble(
     reference = 'db/taxcollector.fa',
     out       = d('refs/reads_vs_taxcollector.txt'),
