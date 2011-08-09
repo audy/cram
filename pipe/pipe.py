@@ -140,17 +140,25 @@ def velvet(**ops):
 def reference_assemble(**ops):
     ''' reference assemble using clc_ref_assemble_long '''
     
-    if not s.path.exists('clc.license'):
-        ohno('CLC license file needs to be present in: %s' % os.getcwd())
+    query = ops['query']
     
+    # TODO add support for interleaving two files!
+    querytypes = {'paired': 'p', 'unpaired': 'q' }
+    
+    if type(query) is str:
+        query_ops = '-q %s' % ops['query']
+    elif type(query) is in (list, tuple):
+        query_ops = ' '.join("-%s %s" % (querytypes[i[0]], i[1]) for i in query)
+        
     clc = ' '.join([
       'bin/clc_ref_assemble_long',
-      '-q %(query)s',
       '-d %(reference)s',
       '-o %(out)s.clc',
       '-a local', # todo, make an option?
       '--cpus 16', # todo, autodetect.
       ]) % ops
+      
+    clc = clc + ' ' + query_ops
     
     ohai('running reference assembly %(query)s vs. %(reference)s')
     run(clc, generates=out + '.clc')

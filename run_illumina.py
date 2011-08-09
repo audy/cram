@@ -117,9 +117,12 @@ make_subsystems_table(
 
 # ## GET OTU COVERAGE
 reference_assemble(
-    query     = 'reads.txt',
     reference = 'db/taxcollector.fa',
     out       = d('refs/reads_vs_taxcollector.txt'),
+    query     = [
+        ('paired', 'data/reads_trimmed.fastq'),
+        ('unpaired', 'data/singletons_left.fastq'),
+        ('unpaired', 'data/singletons_right.fastq')],
 )
 
 make_coverage_Table(
