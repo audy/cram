@@ -143,12 +143,13 @@ def reference_assemble(**ops):
     query = ops['query']
     
     # TODO add support for interleaving two files!
-    querytypes = {'paired': 'p', 'unpaired': 'q' }
+    # TODO and add support for other read orientations :\
+    querytypes = {'paired': '-q -p fb ss 0 500', 'unpaired': '-q' }
     
     if type(query) is str:
         query_ops = '-q %s' % ops['query']
     elif type(query) in (list, tuple):
-        query_ops = ' '.join("-%s %s" % (querytypes[i[0]], i[1]) for i in query)
+        query_ops = ' '.join("%s %s" % (querytypes[i[0]], i[1]) for i in query)
         
     clc = ' '.join([
       'bin/clc_ref_assemble_long',
