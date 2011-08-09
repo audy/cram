@@ -2,11 +2,18 @@
 
 import os
 import sys
+import time
 
 from trim import *
 from dnaio import *
 
 # TODO fix colors, my colorscheme is weird and they look wrong on all other terminals.
+
+def log(s):
+    ''' updates log file '''
+    message = "%s\t%s" % (time.strftime('%c'), s)
+    with open('log.txt', 'a') as out:
+        print >> out, message
 
 def get_outdir(out):
     ''' append config to d '''
@@ -17,17 +24,20 @@ def get_outdir(out):
 
 def ohai(s):
     ''' simple status message '''
+    log(s)
     c = '\033[96m'
     e = '\033[0m'
     print ' %s✪ %s%s' % (c, s, e),
 
 def okay(s):
+    log(s)
     ''' successfully did something '''
     c = '\033[92m'
     e = '\033[0m'
     print ' %s✓%s %s' % (c, e, s)
 
 def ohno(s):
+    log(s)
     ''' did something and AAH! failure! '''
     c = '\033[91m'
     e = '\033[0m'
