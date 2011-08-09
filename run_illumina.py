@@ -46,8 +46,8 @@ for kmer in kmers:
     velvet(
         reads = [
             ('fastq', 'shortPaired', d('reads_trimmed.fastq')),
-            # ('fastq', 'short', d('singletons_left.fastq')),
-            # ('fastq', 'short', d('singletons_right.fastq'))
+            ('fastq', 'short', d('singletons_left.fastq')),
+            ('fastq', 'short', d('singletons_right.fastq'))
         ],
         outdir = kmers[kmer],
         kmer   = kmer
