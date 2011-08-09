@@ -147,7 +147,7 @@ def reference_assemble(**ops):
     
     if type(query) is str:
         query_ops = '-q %s' % ops['query']
-    elif type(query) is in (list, tuple):
+    elif type(query) in (list, tuple):
         query_ops = ' '.join("-%s %s" % (querytypes[i[0]], i[1]) for i in query)
         
     clc = ' '.join([
@@ -161,7 +161,7 @@ def reference_assemble(**ops):
     clc = clc + ' ' + query_ops
     
     ohai('running reference assembly %(query)s vs. %(reference)s')
-    run(clc, generates=out + '.clc')
+    run(clc, generates=ops['out'] + '.clc')
     
     # generate assembly table
     assembly_table = 'bin/assembly_table -n -s %(out)s.clc > %(out)s' % ops
@@ -214,7 +214,7 @@ def phmmer(**ops):
     ]) % ops
     
     ohai('running phmmer: %(query)s vs. %(db)s' % ops)
-    run(phmmer, generates=out + '.table')
+    run(phmmer, generates=ops['out'] + '.table')
 
 def prepare_seed(**ops):
     ''' create table of seed_id -> subsystems '''
