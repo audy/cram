@@ -46,8 +46,8 @@ for kmer in kmers:
     velvet(
         reads = [
             ('fastq', 'shortPaired', d('reads_trimmed.fastq')),
-            # ('fastq', 'short', d('singletons_left.fastq')),
-            # ('fastq', 'short', d('singletons_right.fastq'))
+            ('fastq', 'short', d('singletons_left.fastq')),
+            ('fastq', 'short', d('singletons_right.fastq'))
         ],
         outdir = kmers[kmer],
         kmer   = kmer
@@ -87,15 +87,18 @@ phmmer(
 )
 
 # flatten phmmer file (we only need top hit)
-run('misc/flatten_phmmer.py anno/proteins.txt.table > anno/proteins_flattened.txt')
+# run('misc/flatten_phmmer.py anno/proteins.txt.table > anno/proteins_flattened.txt')
 
 ## GET ORF COVERAGE
 
 # reference assemble
 reference_assemble( # clc specific
-    query     = 'reads.fasta',
     reference = d('orfs/predicted_orfs.fna'),
-    out       = d('refs/reads_versus_orfs.txt')
+    out       = d('refs/reads_versus_orfs.txt'),
+    query     = [
+        ('paired', 'out/reads_trimmed.fastq'),
+        ('unpaired', 'out/singletons_left.fastq'),
+        ('unpaired', 'out/singletons_right.fastq')],
 )
 
 # make coverage table
@@ -115,11 +118,14 @@ make_subsystems_table(
     out            = d('tables/subsystems_coverage.txt')
 )
 
-# ## GET OTU COVERAGE
+# GET OTU COVERAGE
 reference_assemble(
-    query     = 'reads.txt',
     reference = 'db/taxcollector.fa',
     out       = d('refs/reads_vs_taxcollector.txt'),
+    query     = [
+        ('paired', 'out/reads_trimmed.fastq'),
+        ('unpaired', 'out/singletons_left.fastq'),
+        ('unpaired', 'out/singletons_right.fastq')],
 )
 
 make_coverage_Table(

@@ -2,11 +2,18 @@
 
 import os
 import sys
+import time
 
 from trim import *
 from dnaio import *
 
 # TODO fix colors, my colorscheme is weird and they look wrong on all other terminals.
+
+def log(s):
+    ''' updates log file '''
+    message = "%s\t%s" % (time.strftime('%c'), s)
+    with open('log.txt', 'a') as out:
+        print >> out, message
 
 def get_outdir(out):
     ''' append config to d '''
@@ -17,17 +24,20 @@ def get_outdir(out):
 
 def ohai(s):
     ''' simple status message '''
+    log(s)
     c = '\033[96m'
     e = '\033[0m'
     print ' %s✪ %s%s' % (c, s, e),
 
 def okay(s):
+    log(s)
     ''' successfully did something '''
     c = '\033[92m'
     e = '\033[0m'
     print ' %s✓%s %s' % (c, e, s)
 
 def ohno(s):
+    log(s)
     ''' did something and AAH! failure! '''
     c = '\033[91m'
     e = '\033[0m'
@@ -130,20 +140,29 @@ def velvet(**ops):
 def reference_assemble(**ops):
     ''' reference assemble using clc_ref_assemble_long '''
     
-    if not s.path.exists('clc.license'):
-        ohno('CLC license file needs to be present in: %s' % os.getcwd())
+    query = ops['query']
     
+    # TODO add support for interleaving two files!
+    # TODO and add support for other read orientations :\
+    querytypes = {'paired': '-q -p fb ss 0 500', 'unpaired': '-q' }
+    
+    if type(query) is str:
+        query_ops = '-q %s' % ops['query']
+    elif type(query) in (list, tuple):
+        query_ops = ' '.join("%s %s" % (querytypes[i[0]], i[1]) for i in query)
+        
     clc = ' '.join([
       'bin/clc_ref_assemble_long',
-      '-q %(query)s',
       '-d %(reference)s',
       '-o %(out)s.clc',
       '-a local', # todo, make an option?
       '--cpus 16', # todo, autodetect.
       ]) % ops
+      
+    clc = clc + ' ' + query_ops
     
     ohai('running reference assembly %(query)s vs. %(reference)s')
-    run(clc, generates=out + '.clc')
+    run(clc, generates=ops['out'] + '.clc')
     
     # generate assembly table
     assembly_table = 'bin/assembly_table -n -s %(out)s.clc > %(out)s' % ops
@@ -196,7 +215,7 @@ def phmmer(**ops):
     ]) % ops
     
     ohai('running phmmer: %(query)s vs. %(db)s' % ops)
-    run(phmmer, generates=out + '.table')
+    run(phmmer, generates=ops['out'] + '.table')
 
 def prepare_seed(**ops):
     ''' create table of seed_id -> subsystems '''

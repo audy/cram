@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # PHMMER does not let you report only the best hit.
 # I have 11GB Phmmer files :(
@@ -13,11 +13,11 @@ lastquery = False
 with open(sys.argv[1]) as handle:
     for line in handle:
         if line.startswith('#'):
-            print(line.strip())
+            print line.strip()
             continue
         line = line.split()
         query = line[2]
         if lastquery and query != lastquery:
-            print(' '.join(line))
+            print ' '.join(line)
         lastquery = query
 
