@@ -27,7 +27,7 @@ def ohai(s):
     log(s)
     c = '\033[96m'
     e = '\033[0m'
-    print ' %s✪ %s%s' % (c, s, e),
+    print ' %s✪ %s%s' % (c, s, e)
 
 def okay(s):
     log(s)
@@ -137,18 +137,26 @@ def velvet(**ops):
     ohai('running velvetg: %(outdir)s' % ops)
     run(velvetg, generates=ops['outdir'] + '/contigs.fa') # run assembly algorithm
 
+def assembly_table(**ops):
+    ''' generate an assembly table from clc output '''
+    
+    cmd = 'bin/assembly_table -n -s %(input)s > %(out)s' % ops
+    run(cmd, generates="%(out)s" % ops)
+
+
 def reference_assemble(**ops):
     ''' reference assemble using clc_ref_assemble_long '''
     
     query = ops['query']
     
     # TODO add support for interleaving two files!
-    querytypes = {'paired': 'p', 'unpaired': 'q' }
+    # TODO and add support for other read orientations :\
+    querytypes = {'paired': '-q -p fb ss 0 500', 'unpaired': '-q' }
     
     if type(query) is str:
         query_ops = '-q %s' % ops['query']
     elif type(query) in (list, tuple):
-        query_ops = ' '.join("-%s %s" % (querytypes[i[0]], i[1]) for i in query)
+        query_ops = ' '.join("%s %s" % (querytypes[i[0]], i[1]) for i in query)
         
     clc = ' '.join([
       'bin/clc_ref_assemble_long',
@@ -160,12 +168,15 @@ def reference_assemble(**ops):
       
     clc = clc + ' ' + query_ops
     
-    ohai('running reference assembly %(query)s vs. %(reference)s')
-    run(clc, generates=out + '.clc')
+    ohai('running reference assembly %(query)s vs. %(reference)s' % ops)
+    run(clc, generates=ops['out'] + '.clc')
     
     # generate assembly table
-    assembly_table = 'bin/assembly_table -n -s %(out)s.clc > %(out)s' % ops
-    run(assembly_table, generates="%(out)s.clc" % ops)
+    assembly_table(
+        input  = ops['out'] + '.clc',
+        out    = ops['out']
+    )
+    
 
 
 def prodigal(**ops):
@@ -214,7 +225,7 @@ def phmmer(**ops):
     ]) % ops
     
     ohai('running phmmer: %(query)s vs. %(db)s' % ops)
-    run(phmmer, generates=out + '.table')
+    run(phmmer, generates=ops['out'] + '.table')
 
 def prepare_seed(**ops):
     ''' create table of seed_id -> subsystems '''
@@ -342,29 +353,37 @@ def make_coverage_table(**ops):
 def make_subsystems_table(**ops):
     ''' converts a coverage table to a subsystems table given
     the figid -> subsystems info '''
-    
-    # NOTE this may be more difficult with pairs.
-    
+        
     subsnames      = ops['subsnames']
     coverage_table = ops['coverage_table']
     out            = ops['out']
     reads          = ops['reads']
+    reads_type     = ops.get('reads_type', 'fasta')
     
     ohai('creating subsystems table')
     if os.path.exists(out):
         okay('skipping')
         return
     
-    # get total number of reads (makes life easier)
-    # XXX this only works for FASTA, fix for FASTQ using DNAIO please :)
+    # get total number of reads
     from itertools import count
     c = count()
-    with open(reads) as handle:
-        for line in handle:
-            if line.startswith('>'):
+
+    print 'counting reads'
+
+    if type(reads) in (list, tuple):
+        for r in reads:
+            with open(r) as handle:
+                for i in Dna(handle, type=reads_type):
+                    total_reads = c.next()
+    elif type(reads) is str:
+        with open(reads) as handle:
+            for i in Dna(handle, type=reads_type):
                 total_reads = c.next()
+                
+    print 'loading names'
     
-    # load subs names
+    # load subsystem names
     with open(subsnames) as handle:
         fig_to_name = {}
         for line in handle:
@@ -385,6 +404,7 @@ def make_subsystems_table(**ops):
     # parse coverage table and output hierarchies based on SEED subsystems
     from collections import defaultdict
     merged_counts = defaultdict(int)
+    
     with open(coverage_table) as handle:
         for line in handle:
             if line.startswith('#'): continue
