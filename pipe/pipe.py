@@ -147,7 +147,7 @@ def reference_assemble(**ops):
     
     if type(query) is str:
         query_ops = '-q %s' % ops['query']
-    elif type(query) is in (list, tuple):
+    elif type(query) in (list, tuple):
         query_ops = ' '.join("-%s %s" % (querytypes[i[0]], i[1]) for i in query)
         
     clc = ' '.join([
