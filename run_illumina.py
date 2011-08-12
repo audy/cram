@@ -87,7 +87,8 @@ phmmer(
 )
 
 # flatten phmmer file (we only need top hit)
-# run('misc/flatten_phmmer.py anno/proteins.txt.table > anno/proteins_flattened.txt')
+run('misc/flatten_phmmer.py out/anno/proteins.txt.table > out/anno/proteins_flat.txt',
+    generates='out/anno/proteins_flat.txt')
 
 ## GET ORF COVERAGE
 
@@ -96,9 +97,9 @@ reference_assemble( # clc specific
     reference = d('orfs/predicted_orfs.fna'),
     out       = d('refs/reads_versus_orfs.txt'),
     query     = [
-        ('paired', 'out/reads_trimmed.fastq'),
-        ('unpaired', 'out/singletons_left.fastq'),
-        ('unpaired', 'out/singletons_right.fastq')],
+        ('unpaired', d('reads_trimmed.fastq')),
+        ('unpaired', d('singletons_left.fastq')),
+        ('unpaired', d('singletons_right.fastq')) ],
 )
 
 # make coverage table
@@ -107,35 +108,45 @@ make_coverage_table( # clc specific
     reference = d('orfs/predicted_orfs.fna'),
     clc_table = d('refs/reads_versus_orfs.txt'),
     phmmer    = d('anno/proteins_flat.txt'),
-    out       = d('tables/orfs_coverage.txt')
+    out       = d('tables/orfs_coverage.txt'),
 )
 
 # make subsystems table from coverage table
 make_subsystems_table(
-    reads          = 'data/reads.fasta',
     subsnames      = 'db/seed_ss.txt',
     coverage_table = d('tables/orfs_coverage.txt'),
-    out            = d('tables/subsystems_coverage.txt')
+    out            = d('tables/subsystems_coverage.txt'),
+    reads_type     = 'fastq',
+    reads          = [
+        d('reads_trimmed.fastq'),
+        d('singletons_left.fastq'),
+        d('singletons_right.fastq') ]
 )
+
+quit()
 
 # GET OTU COVERAGE
 reference_assemble(
     reference = 'db/taxcollector.fa',
     out       = d('refs/reads_vs_taxcollector.txt'),
     query     = [
-        ('paired', 'out/reads_trimmed.fastq'),
-        ('unpaired', 'out/singletons_left.fastq'),
-        ('unpaired', 'out/singletons_right.fastq')],
+        ('unpaired', d('reads_trimmed.fastq')),
+        ('unpaired', d('singletons_left.fastq')),
+        ('unpaired', d('singletons_right.fastq')) ],
 )
 
-make_coverage_Table(
-    reads = 'reads.fasta',
-    reference = d('db/taxcollector.fa'),
-    clc_table = d('refs/16s_table.txt')
+make_coverage_table(
+    reference    = d('db/taxcollector.fa'),
+    clc_table    = d('refs/16s_table.txt'),
+    reads_format = 'fastq',
+    reads        = [
+        d('reads_trimmed.fastq'),
+        d('singletons_left.fastq'),
+        d('singletons_right.fastq') ]
 )
 
 # TODO make OTU abundancy matrices
-# *NOTE I should just make those scripts part of
+# NOTE I should just make those scripts part of
 # taxcollector :\
 
 # estimate average genome size and use to normalize?
