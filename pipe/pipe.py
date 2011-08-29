@@ -52,7 +52,7 @@ def run(cmd, generates=False):
         if type(generates) == str:
                 generates = [generates]
         for f in generates:
-            if os.path.exists(f):
+            if os.path.exists(f):    
                 okay('skipping')
                 return
     

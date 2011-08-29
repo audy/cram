@@ -25,7 +25,7 @@ ohai('running pipeline!')
     d('tables') ] ]
 
 ## TRIM READS
-if not os.path.exists(d('reads_trimmed.fastq')):
+if not os.path.exists(d('reads_trimmed.fasta')):
     ohai('trimming sequences')
     sequences = (r for r in Dna(open(reads), type='fastq'))
     trimmed = (Trim.trim(r) for r in sequences)
@@ -33,7 +33,7 @@ if not os.path.exists(d('reads_trimmed.fastq')):
     # filter by minimum length (no need for this w/ Velvet?)
     trimmed = (i for i in trimmed if len(i) > cutoff)
  
-    with open(d('reads_trimmed.fastq'), 'w') as handle:
+    with open(d('reads_trimmed.fasta'), 'w') as handle:
         for t in trimmed:
             print >> handle, t.fasta
 else:
@@ -48,14 +48,14 @@ kmers = {
 
 for kmer in kmers:
     velvet(
-        reads  = [('fastq', 'short', d('reads_trimmed.fastq'))],
+        reads  = [('fasta', 'short', d('reads_trimmed.fasta'))],
         outdir = kmers[kmer],
         kmer   = kmer
     )
     
 # run final assembly
 velvet(
-    reads    = [('fasta', 'long', d('contigs_%s' % k)) for k in kmers],
+    reads    = [('fasta', 'long', d('contigs_%s/contigs.fa' % k)) for k in kmers],
     outdir   = d('final_contigs'),
     kmer     = 51
 )
@@ -84,7 +84,9 @@ phmmer(
 )
 
 # flatten phmmer file (we only need top hit)
-run('misc/flatten_phmmer.py anno/proteins.txt.table > anno/proteins_flattened.txt')
+run('misc/flatten_phmmer.py %s > %s' % (
+    d('anno/proteins.txt.table'),
+    d('anno/proteins_flattened.txt')))
 
 ## GET ORF COVERAGE
 
@@ -105,6 +107,7 @@ make_coverage_table( # clc specific
 )
 
 # make subsystems table from coverage table
+# TODO split up into 4 hierarchy tables
 make_subsystems_table(
     reads          = 'data/reads.fasta',
     subsnames      = 'db/seed_ss.txt',
@@ -112,7 +115,7 @@ make_subsystems_table(
     out            = d('tables/subsystems_coverage.txt')
 )
 
-# ## GET OTU COVERAGE
+# GET OTU COVERAGE
 reference_assemble(
     query     = 'reads.txt',
     reference = 'db/taxcollector.fa',
