@@ -97,14 +97,13 @@ reference_assemble( # clc specific
     reference = d('orfs/predicted_orfs.fna'),
     out       = d('refs/reads_versus_orfs.txt'),
     query     = [
-        ('unpaired', d('reads_trimmed.fastq')),
-        ('unpaired', d('singletons_left.fastq')),
-        ('unpaired', d('singletons_right.fastq')) ],
+        d('reads_trimmed.fastq'),
+        d('singletons_left.fastq'),
+        d('singletons_right.fastq') ],
 )
 
 # make coverage table
 make_coverage_table( # clc specific
-    reads     = 'reads.fasta',
     reference = d('orfs/predicted_orfs.fna'),
     clc_table = d('refs/reads_versus_orfs.txt'),
     phmmer    = d('anno/proteins_flat.txt'),
@@ -117,10 +116,6 @@ make_subsystems_table(
     coverage_table = d('tables/orfs_coverage.txt'),
     out            = d('tables/subsystems_coverage.txt'),
     reads_type     = 'fastq',
-    reads          = [
-        d('reads_trimmed.fastq'),
-        d('singletons_left.fastq'),
-        d('singletons_right.fastq') ]
 )
 
 # GET OTU COVERAGE
@@ -128,26 +123,13 @@ reference_assemble(
     reference = 'db/taxcollector.fa',
     out       = d('refs/reads_vs_taxcollector.txt'),
     query     = [
-        ('unpaired', d('reads_trimmed.fastq')),
-        ('unpaired', d('singletons_left.fastq')),
-        ('unpaired', d('singletons_right.fastq')) ],
+        d('reads_trimmed.fastq'),
+        d('singletons_left.fastq'),
+        d('singletons_right.fastq') ],
 )
 
-make_coverage_table(
+make_otu_coverage_table(
     reference    = d('db/taxcollector.fa'),
     clc_table    = d('refs/16s_table.txt'),
     reads_format = 'fastq',
-    reads        = [
-        d('reads_trimmed.fastq'),
-        d('singletons_left.fastq'),
-        d('singletons_right.fastq') ]
 )
-
-# TODO make OTU abundancy matrices
-# NOTE I should just make those scripts part of
-# taxcollector :\
-
-# estimate average genome size and use to normalize?
-
-# make_subsystems_table()
-# make_phylogeny_table()
