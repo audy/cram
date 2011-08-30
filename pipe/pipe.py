@@ -176,8 +176,6 @@ def reference_assemble(**ops):
         input  = ops['out'] + '.clc',
         out    = ops['out']
     )
-    
-
 
 def prodigal(**ops):
     ''' run prodigal '''
@@ -281,8 +279,70 @@ def prepare_seed(**ops):
                 
                 print >> out, "%s\t%s" % (fig, names)
 
+def make_otu_coverage_table(**ops):
+    ''' create table of reference sequence, no. hits
+    specially for TaxCollector
+    '''
+    
+    reference = ops['reference']
+    clc_table = ops['clc_table']
+    out       = ops['out']
+    
+    ohai('creating coverage table')
+    if os.path.exists(out):
+        okay('skipping')
+        return
+
+    from itertools import count
+    from collections import defaultdict
+    
+    # get sequence # -> header from reference db
+    # * fix this for paired output!?
+    # * clc has a bug in table output, might not even need to do this.
+    n_to_counts = defaultdict(int) # { reference: reads that mapped to it }
+    with open(clc_table) as handle:
+        for line in handle:
+            line = line.strip().split()
+            ref_n = int(line[5])
+            
+            n_to_counts[ref_n] += 1
+            
+    # convert back into regs dictionary
+    n_to_counts = dict(n_to_counts)
+
+    # which names to keep?
+    keep = set(n_to_counts.keys())
+    
+    # get names of references that we care about
+    # XXX start counting at 1 or 0?
+    c, n_to_orf = count(), {}
+    n_to_orf[-1] = 'unmatched'
+    with open(reference) as handle:
+        for line in handle:
+            if line.startswith('>'):
+                n = c.next()
+                orf = line.lstrip('>').rstrip().split()[0]
+                if n in keep:
+                    n_to_orf[n] = orf
+        
+    # print coverage table
+    with open(out, 'w') as handle:
+        print >> handle, '# function\t%s' % clc_table
+        for n in n_to_counts:
+            orf = n_to_orf[n]
+
+            count = n_to_counts[n]
+            print >> handle, '%s\t%s' % (orf, count)
+
+
 def make_coverage_table(**ops):
-    ''' create table of reference sequence, no. hits '''
+    ''' create table of reference sequence, no. hits
+    specially for SEED.
+    '''
+    
+    # TODO: if I "taxcollect" the SEED database first, 
+    # then it will be possible to merge this
+    # with make_otu_coverage_table()
     
     reference = ops['reference']
     clc_table = ops['clc_table']
