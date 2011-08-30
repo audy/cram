@@ -86,30 +86,31 @@ phmmer(
 # flatten phmmer file (we only need top hit)
 run('misc/flatten_phmmer.py %s > %s' % (
     d('anno/proteins.txt.table'),
-    d('anno/proteins_flattened.txt')))
+    d('anno/proteins_flattened.txt')),
+    generates=d('anno/proteins_flattened.txt'))
 
 ## GET ORF COVERAGE
 
 # reference assemble
 reference_assemble( # clc specific
-    query     = 'reads.fasta',
+    query     = d('reads_trimmed.fasta'),
     reference = d('orfs/predicted_orfs.fna'),
     out       = d('refs/reads_versus_orfs.txt')
 )
 
 # make coverage table
 make_coverage_table( # clc specific
-    reads     = 'reads.fasta',
+    reads     = d('reads_trimmed.fasta'),
     reference = d('orfs/predicted_orfs.fna'),
     clc_table = d('refs/reads_versus_orfs.txt'),
-    phmmer    = d('anno/proteins_flat.txt'),
+    phmmer    = d('anno/proteins_flattened.txt'),
     out       = d('tables/orfs_coverage.txt')
 )
 
 # make subsystems table from coverage table
 # TODO split up into 4 hierarchy tables
 make_subsystems_table(
-    reads          = 'data/reads.fasta',
+    reads          = d('reads_trimmed.fasta'),
     subsnames      = 'db/seed_ss.txt',
     coverage_table = d('tables/orfs_coverage.txt'),
     out            = d('tables/subsystems_coverage.txt')
@@ -117,15 +118,18 @@ make_subsystems_table(
 
 # GET OTU COVERAGE
 reference_assemble(
-    query     = 'reads.txt',
+    query     = d('reads_trimmed.fasta'),
     reference = 'db/taxcollector.fa',
     out       = d('refs/reads_vs_taxcollector.txt'),
 )
 
-make_coverage_Table(
-    reads = 'reads.fasta',
+quit()
+
+make_coverage_table(
+    reads     = d('reads_trimmed.fasta'),
     reference = d('db/taxcollector.fa'),
-    clc_table = d('refs/16s_table.txt')
+    clc_table = d('refs/reads_vs_taxcollector.txt'),
+    out       = d('tables/otu_coverage.txt'),
 )
 
 # TODO make OTU abundancy matrices
