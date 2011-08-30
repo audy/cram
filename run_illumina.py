@@ -97,9 +97,9 @@ reference_assemble( # clc specific
     reference = d('orfs/predicted_orfs.fna'),
     out       = d('refs/reads_versus_orfs.txt'),
     query     = [
-        d('reads_trimmed.fastq'),
-        d('singletons_left.fastq'),
-        d('singletons_right.fastq') ],
+        ('unpaired', d('reads_trimmed.fastq')),
+        ('unpaired', d('singletons_left.fastq')),
+        ('unpaired', d('singletons_right.fastq')) ],
 )
 
 # make coverage table
@@ -123,9 +123,9 @@ reference_assemble(
     reference = 'db/taxcollector.fa',
     out       = d('refs/reads_vs_taxcollector.txt'),
     query     = [
-        d('reads_trimmed.fastq'),
-        d('singletons_left.fastq'),
-        d('singletons_right.fastq') ],
+        ('unpaired', d('reads_trimmed.fastq')),
+        ('unpaired', d('singletons_left.fastq')),
+        ('unpaired', d('singletons_right.fastq')) ],
 )
 
 make_otu_coverage_table(
