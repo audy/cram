@@ -129,12 +129,3 @@ make_otu_coverage_table(
     clc_table = d('refs/reads_vs_taxcollector.txt'),
     out       = d('tables/otu_coverage.txt'),
 )
-
-# TODO make OTU abundancy matrices
-# *NOTE I should just make those scripts part of
-# taxcollector :\
-
-# estimate average genome size and use to normalize?
-
-# make_subsystems_table()
-# make_phylogeny_table()
