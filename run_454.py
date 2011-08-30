@@ -123,11 +123,9 @@ reference_assemble(
     out       = d('refs/reads_vs_taxcollector.txt'),
 )
 
-quit()
-
-make_coverage_table(
+make_otu_coverage_table(
     reads     = d('reads_trimmed.fasta'),
-    reference = d('db/taxcollector.fa'),
+    reference = 'db/taxcollector.fa',
     clc_table = d('refs/reads_vs_taxcollector.txt'),
     out       = d('tables/otu_coverage.txt'),
 )
