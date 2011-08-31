@@ -481,7 +481,7 @@ def make_subsystems_table(**ops):
             # This merges subsystem hierarchies and sums their counts
             # TODO I really ought to create a test for this as it's pretty
             # crucial and breakeable
-            for i in range(len(subsystems))[1:]:
+            for i in range(len(subsystems)):
                 hierarchy = ';'.join(subsystems[:i])
                 if hierarchy == '':
                     hierarchy = 'TOTAL'
