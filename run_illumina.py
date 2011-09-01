@@ -116,6 +116,11 @@ make_subsystems_table(
     coverage_table = d('tables/orfs_coverage.txt'),
     out            = d('tables/subsystems_coverage.txt'),
     reads_type     = 'fastq',
+    reads     = [
+        d('reads_trimmed.fastq'),
+        d('singletons_left.fastq'),
+        d('singletons_right.fastq')
+    ],
 )
 
 # GET OTU COVERAGE
@@ -129,7 +134,8 @@ reference_assemble(
 )
 
 make_otu_coverage_table(
-    reference    = d('db/taxcollector.fa'),
-    clc_table    = d('refs/16s_table.txt'),
+    reference    = 'db/taxcollector.fa',
+    clc_table    = d('refs/reads_vs_taxcollector.txt'),
     reads_format = 'fastq',
+    out          = d('tables/phylogenetic.txt'),
 )
