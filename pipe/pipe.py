@@ -80,8 +80,8 @@ def trim_pairs(**ops):
     
     input_format = ops.get('input_format', 'qseq')
     
-    left_mates  = Dna(open(ops['left_mates']), type=input_format)
-    right_mates = Dna(open(ops['right_mates']), type=input_format)
+    left_mates  = Dna(ops['left_mates'], type=input_format)
+    right_mates = Dna(ops['right_mates'], type=input_format)
     out_left    = open(ops['out_left'], 'w')
     out_right   = open(ops['out_right'], 'w')
     out_trimmed = open(ops['out'], 'w')
