@@ -3,8 +3,6 @@
 
 from pipe import *
 
-import gzip
-
 # check if user ran make    
 if not os.path.exists('bin'):
     ohno('bin/ doesn\'t exist. Did you run make?')
@@ -29,8 +27,8 @@ ohai('running pipeline!')
     d('tables') ] ]
 
 trim_pairs(
-    left_mates  = gzip.open(left_mates),
-    right_mates = gzip.open(right_mates),
+    left_mates  = open(left_mates),
+    right_mates = open(right_mates),
     out_left    = d('singletons_left.fastq'),
     out_right   = d('singletons_right.fastq'),
     out         = d('reads_trimmed.fastq'),
