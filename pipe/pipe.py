@@ -130,7 +130,7 @@ def velvet(**ops):
         '%(kmer)s']) % ops
         
     velveth = cmd + ' ' + ' '.join(read_ops) + '>/dev/null'
-    velvetg = 'bin/velvetg %(outdir)s > /dev/null' % ops
+    velvetg = 'bin/velvetg %(outdir)s -very_clean yes > /dev/null' % ops
     
     ohai('running velveth: %(reads)s, k = %(kmer)s' % ops)
     run(velveth, generates=ops['outdir']) # run hash algorithm
