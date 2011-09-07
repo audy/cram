@@ -56,7 +56,7 @@ for k in kmers:
 # run final assembly
 velvet(
     reads    = [('fasta', 'long', d('contigs_%s/contigs.fa' % k)) for k in kmers],
-    outdir   = d('final_contigs'),
+    outdir   = d('contigs_final'),
     k        = 51
 )
 
