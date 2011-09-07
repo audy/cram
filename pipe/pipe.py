@@ -44,17 +44,19 @@ def ohno(s):
     print '\n %s✖%s %s' % (c, e, s)
     quit(1)
 
-def run(cmd, generates=False):
+def run(cmd, generates=False, force=False):
     ''' runs a system command, unless output exists '''
     
     # check if output already exists, skip if it does.
-    if generates:
+    if generates and not force:
         if type(generates) == str:
                 generates = [generates]
         for f in generates:
             if os.path.exists(f):    
                 okay('skipping')
                 return
+    if force:
+        okay('forced')
     
     res = os.system(cmd)
     if res == 0:
