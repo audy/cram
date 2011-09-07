@@ -46,18 +46,18 @@ kmers = {
      71: d('contigs_71')
 }
 
-for kmer in kmers:
+for k in kmers:
     velvet(
         reads  = [('fasta', 'short', d('reads_trimmed.fasta'))],
-        outdir = kmers[kmer],
-        kmer   = kmer
+        outdir = kmers[k],
+        k      = kmer
     )
     
 # run final assembly
 velvet(
     reads    = [('fasta', 'long', d('contigs_%s/contigs.fa' % k)) for k in kmers],
     outdir   = d('final_contigs'),
-    kmer     = 51
+    k        = 51
 )
 
 # PREDICT OPEN READING FRAMES

@@ -42,15 +42,15 @@ kmers = {
      71: d('contigs_71')
 }
 
-for kmer in kmers:
+for k in kmers:
     velvet(
         reads = [
             ('fastq', 'shortPaired', d('reads_trimmed.fastq')),
             ('fastq', 'short', d('singletons_left.fastq')),
             ('fastq', 'short', d('singletons_right.fastq'))
         ],
-        outdir = kmers[kmer],
-        kmer   = kmer
+        outdir = kmers[k],
+        k      = k
     )
 
 # run final assembly
@@ -59,13 +59,13 @@ for kmer in kmers:
 
 velvet(
     reads    = [('fasta', 'long', d('contigs_%s/contigs.fa' % k)) for k in kmers],
-    outdir   = d('final_contigs'),
-    kmer     = 51
+    outdir   = d('contigs_final'),
+    k        = 51
 )
 
 # PREDICT OPEN READING FRAMES
 prodigal(
-    input  = d('final_contigs/contigs.fa'),
+    input  = d('contigs_final/contigs.fa'),
     out    = d('orfs/predicted_orfs') # prefix*
 )
 
