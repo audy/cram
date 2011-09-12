@@ -12,7 +12,7 @@ class Csv(object):
            key=0)            # key column '''
     
     @classmethod
-    def parse(handle, **args):
+    def parse(self, handle, **args):
         
         # options
         sep = args.get('separator', ',') # record separator character
@@ -23,11 +23,12 @@ class Csv(object):
         
         # deal with header
         header   = handle.next().strip().split(sep)
+        print header
         main_key = header.pop(key)
-        
+
         for line in handle:
             
-            line    = line.strip.split(sep)
+            line    = line.strip().split(sep)
             datum   = {}
             primary = line.pop(key)
             
@@ -37,8 +38,8 @@ class Csv(object):
                     raise Exception("Duplicate secondary key: %s!" % k)
                 # add a column
                 datum[k] = d
-            # sanity check
-            elif primary in data:
+                # sanity check
+            if primary in data:
                     raise Exception("Duplicate primary key: %s" % primary)
             # add a row    
             data[primary] = datum
@@ -46,27 +47,34 @@ class Csv(object):
         return data
     
     @classmethod
-    def careful_merge(*datas):
+    def careful_merge(self, *datas):
         ''' merge csv files (from hashes) without accidentally
         overwriting anything'''
         
         # make sure there are no duplicates
-        assert len(set(*i.values() for i in datas)) == len(i.values() for i in datas)
+        #assert len(set(i.values() for i in datas)) == len(i.values() for i in datas)
+
         return dict(i.items() for i in datas)
         
     @classmethod    
-    def pretty_print(d, **args):
+    def pretty_print(self, d, **args):
         sep = args.get('sep', '\t')
         ''' print the table pretty-like'''
         pass
         
+
 def main():
     
     # MUST LOAD ALL THE TABLES!!!
-    datas = dict( (i, Csv.parse(open(i))) for i in sys.argv )
+    datas = dict( (i, Csv.parse(open(i), separator="\t")) for i in sys.argv[1:] )
+
+    print datas.values()[0]
     
     # le merge
-    Csv.careful_merge(datas)
+    # Csv.careful_merge(datas)
     
-    Csv.pretty_print(datas)
+    # Csv.pretty_print(datas)
     # PRINT 'EM!
+    
+if __name__ == '__main__':
+    main()
