@@ -12,6 +12,12 @@ out    = 'out'
 left_mates = 'data/s71.qseq'
 right_mates = 'data/s73.qseq'
 
+# Define how to filter taxonomic matches
+phylo = {
+    'phylum': { 'num': 2, 'sim': 0.80 },
+    'genus': { 'num': 8, 'sim': 0.95 },
+}
+
 # Creates a simple function to prepend the output directory
 # to the directory/filename you specify
 d = get_outdir(out)
@@ -42,16 +48,15 @@ kmers = {
      71: d('contigs_71')
 }
 
-for k in kmers:
-    velvet(
-        reads = [
-            ('fastq', 'shortPaired', d('reads_trimmed.fastq')),
-            ('fastq', 'short', d('singletons_left.fastq')),
-            ('fastq', 'short', d('singletons_right.fastq'))
-        ],
-        outdir = kmers[k],
-        k      = k
-    )
+[ velvet(
+    reads = [
+        ('fastq', 'shortPaired', d('reads_trimmed.fastq')),
+        ('fastq', 'short', d('singletons_left.fastq')),
+        ('fastq', 'short', d('singletons_right.fastq'))
+    ],
+    outdir = kmers[k],
+    k      = k
+) for k in kmers ]
 
 # run final assembly
 # type of assembly depends on whether or not contigs from first
@@ -116,7 +121,7 @@ make_subsystems_table(
     coverage_table = d('tables/orfs_coverage.txt'),
     out            = d('tables/subsystems_coverage.txt'),
     reads_type     = 'fastq',
-    reads     = [
+    reads          = [
         d('reads_trimmed.fastq'),
         d('singletons_left.fastq'),
         d('singletons_right.fastq')
@@ -133,9 +138,26 @@ reference_assemble(
         ('unpaired', d('singletons_right.fastq')) ],
 )
 
-make_otu_coverage_table(
+# MAKE OTU COVERAGE TABLES
+# Filter CLC output
+[ clc_filter(
+    assembly   = d('refs/reads_vs_taxcollector.txt.clc'),
+    similarity = phylo[p]['sim'],
+    length     = 0.80,
+    out        = d('refs/%(p)s.clc')
+) for p in phylo ]
+
+# Convert from CLC table to text-file
+[ assembly_table(
+    input  = d('refs/%(p)s.clc'),
+    out    = d('tables/%(p)s.txt')
+) for p in phylo ]
+
+# Make coverage table (at a certain level)
+[ make_otu_coverage_table(
     reference    = 'db/taxcollector.fa',
     clc_table    = d('refs/reads_vs_taxcollector.txt'),
     reads_format = 'fastq',
     out          = d('tables/phylogenetic.txt'),
-)
+    level        = phylo[p]['num']
+) for p in phylo ]

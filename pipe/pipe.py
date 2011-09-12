@@ -139,6 +139,28 @@ def velvet(**ops):
     ohai('running velvetg: %(outdir)s' % ops)
     run(velvetg, generates=ops['outdir'] + '/contigs.fa') # run assembly algorithm
 
+    
+def clc_filter(**ops):
+    ''' filter clc output generating more clc output
+    
+    clc_filter(assembly = 'assembly.clc',
+               out = 'assembly_50_95.txt'.
+               length = 0.5,
+               similarity = 0.95)    
+    '''
+    
+    ohai('clc_filter: %(assembly)s, o=%(out)s, l=%(length)s, s=%(similarity)s')
+    
+    cmd = ' '.join([
+        'bin/filter_matches',
+        '--assembly %(assembly)s',
+        '--output %(out)s',
+        '--lengthfraction %(length)s',
+        '--similaritys %(similarity)s'
+        ]) % ops
+        
+    run(cmd, generates="%(out)s" % ops)
+
 def assembly_table(**ops):
     ''' generate an assembly table from clc output '''
     
