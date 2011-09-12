@@ -156,9 +156,9 @@ def clc_filter(**ops):
         '--assembly %(assembly)s',
         '--output %(out)s',
         '--lengthfraction %(length)s',
-        '--similaritys %(similarity)s'
+        '--similarity %(similarity)s'
         ]) % ops
-        
+    print cmd        
     run(cmd, generates="%(out)s" % ops)
 
 def assembly_table(**ops):
