@@ -150,7 +150,7 @@ reference_assemble(
 # Convert from CLC table to text-file
 [ assembly_table(
     input  = d('refs/%s.clc' % p),
-    out    = d('tables/%s.txt' % p)
+    out    = d('refs/%s.txt' % p)
 ) for p in phylo ]
 
 # Make coverage table (at a certain level)
@@ -158,6 +158,6 @@ reference_assemble(
     reference    = 'db/taxcollector.fa',
     clc_table    = d('refs/reads_vs_taxcollector.txt'),
     reads_format = 'fastq',
-    out          = d('tables/phylogenetic.txt'),
+    out          = d('tables/%s.txt' % p),
     level        = phylo[p]['num']
 ) for p in phylo ]
