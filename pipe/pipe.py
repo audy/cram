@@ -129,12 +129,12 @@ def velvet(**ops):
     cmd = ' '.join([
         'bin/velveth',
         '%(outdir)s',
-        '%(kmer)s']) % ops
+        '%(k)s']) % ops
         
     velveth = cmd + ' ' + ' '.join(read_ops) + '>/dev/null'
     velvetg = 'bin/velvetg %(outdir)s -very_clean yes > /dev/null' % ops
     
-    ohai('running velveth: %(reads)s, k = %(kmer)s' % ops)
+    ohai('running velveth: %(reads)s, k = %(k)s' % ops)
     run(velveth, generates=ops['outdir']) # run hash algorithm
     ohai('running velvetg: %(outdir)s' % ops)
     run(velvetg, generates=ops['outdir'] + '/contigs.fa') # run assembly algorithm
@@ -363,7 +363,7 @@ def make_coverage_table(**ops):
             
             n_to_counts[ref_n] += 1
     
-    # convert back into regs dictionary
+    # convert to a regs dictionary
     n_to_counts = dict(n_to_counts)
     
     # which names to keep?
