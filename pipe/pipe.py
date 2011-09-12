@@ -3,6 +3,7 @@
 import os
 import sys
 import time
+import re
 
 from trim import *
 from dnaio import *
@@ -311,6 +312,10 @@ def make_otu_coverage_table(**ops):
     reference = ops['reference']
     clc_table = ops['clc_table']
     out       = ops['out']
+    level     = ops['level']
+    
+    if level:
+        regex = re.compile(r'\[%s\](.*?)($|;\[)' % level)
     
     ohai('creating coverage table')
     if os.path.exists(out):
@@ -349,6 +354,12 @@ def make_otu_coverage_table(**ops):
         
         for orf_name in n_to_counts:
             count = n_to_counts[orf_name]
+            
+            # get orf name at level
+            if level:
+                start, end = re.search(regex).span()
+                orf_name = orf_name[start, end]
+            
             print >> handle, '%s\t%s' % (orf_name, count)
 
 
@@ -430,6 +441,16 @@ def make_coverage_table(**ops):
 def make_subsystems_table(**ops):
     ''' converts a coverage table to a subsystems table given
     the figid -> subsystems info '''
+    
+    # TODO: I used to take into account CLC's paired-end data and get the
+    # LCA of the two proteins if they didn't match. However, I stopped doing
+    # this for two reasons:
+    #
+    # 1.) It doesn't make sense: If mates in a pair match different references
+    # they are unlikely to match different references with similar functions
+    # (I saw this when looking at the output)
+    #
+    # 2.) CLCs output for paired-data has bugs and is meaningless
         
     subsnames      = ops['subsnames']
     coverage_table = ops['coverage_table']
