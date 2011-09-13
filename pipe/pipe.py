@@ -357,8 +357,13 @@ def make_otu_coverage_table(**ops):
             
             # get orf name at level
             if level:
-                start, end = re.search(regex).span()
-                orf_name = orf_name[start, end]
+                m = re.search(regex).span()
+                if m:
+                    start, end = m
+                    orf_name = orf_name[start, end]
+                else:
+                    print >> sys.stderr, orf_name
+                    continue # what to do in this sitation ??
             
             print >> handle, '%s\t%s' % (orf_name, count)
 
