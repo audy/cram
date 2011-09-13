@@ -9,7 +9,6 @@ from trim import *
 from dnaio import *
 from helps import *
 
-# TODO fix colors, my colorscheme is weird and they look wrong on all other terminals.
 def trim_pairs(**ops):
     ''' trim paired reads, output interleaved fastq and singletons files '''
     
