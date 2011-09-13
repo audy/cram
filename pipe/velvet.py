@@ -1,5 +1,7 @@
 # For using Velvet de-novo assembler
 
+from helps import *
+
 def velvet(**ops):
     ''' run velvet assembly
         outdir = 'output_directory',

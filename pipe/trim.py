@@ -1,4 +1,5 @@
 from dnaio import *
+from helps import *
 
 def trim_pairs(**ops):
     ''' trim paired reads, output interleaved fastq and singletons files '''

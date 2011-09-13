@@ -1,5 +1,7 @@
 # For using SMALT reference assembler
 
+from helps import *
+
 def smalt_index(**ops):
     ''' build reference index '''
     reference = ['reference']

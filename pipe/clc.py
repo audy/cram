@@ -7,6 +7,7 @@
 # make_coverage_table
 
 import re
+from helps import *
 
 def clc_filter(**ops):
     ''' filter clc output generating more clc output

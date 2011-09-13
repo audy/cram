@@ -1,5 +1,7 @@
 # for using PHMMER
 
+from helps import *
+
 def phmmer(**ops):
     ''' run phmmer '''
     

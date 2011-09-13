@@ -1,5 +1,7 @@
 # For using Prodigal Gene Prediction
 
+from helps import *
+
 def prodigal(**ops):
     ''' run prodigal '''
     
