@@ -1,5 +1,50 @@
 from dnaio import *
 
+def trim_pairs(**ops):
+    ''' trim paired reads, output interleaved fastq and singletons files '''
+    
+    ohai('trimming pairs')
+    for f in [ops['out_left'], ops['out_right'], ops['out']]:
+        if os.path.exists(f):
+            okay('skipping!')
+            return
+    
+    input_format = ops.get('input_format', 'qseq')
+    
+    left_mates  = Dna(ops['left_mates'], type=input_format)
+    right_mates = Dna(ops['right_mates'], type=input_format)
+    out_left    = open(ops['out_left'], 'w')
+    out_right   = open(ops['out_right'], 'w')
+    out_trimmed = open(ops['out'], 'w')
+    cutoff      = int(ops['cutoff'])
+    
+    from itertools import izip
+    
+    for left, right in izip(left_mates, right_mates):
+        left_trimmed, right_trimmed = Trim.trim(left), Trim.trim(right)
+        
+        if len(right_trimmed) < cutoff and len(left_trimmed) < cutoff:
+            # both reads suck
+            continue
+        elif len(right_trimmed) < cutoff:
+            # keep left pair
+            print >> out_left, left_trimmed.fastq
+        elif len(left_trimmed) < cutoff:
+            # keep right pair
+            print >> out_right, right_trimmed.fastq
+        else:
+            # both are good, keep both!
+            print >> out_trimmed, left_trimmed.fastq
+            print >> out_trimmed, right_trimmed.fastq
+    
+    # way too many file handles :[
+    out_left.close()
+    out_right.close()
+    out_trimmed.close()
+    left_mates.close()
+    right_mates.close()
+
+
 class Trim():
     ''' The Famous Trim algorithm '''
 

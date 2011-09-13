@@ -92,14 +92,14 @@ run('misc/flatten_phmmer.py %s > %s' % (
 ## GET ORF COVERAGE
 
 # reference assemble
-reference_assemble( # clc specific
+clc_reference_assemble( # clc specific
     query     = d('reads_trimmed.fasta'),
     reference = d('orfs/predicted_orfs.fna'),
     out       = d('refs/reads_versus_orfs.txt')
 )
 
 # make coverage table
-make_coverage_table( # clc specific
+clc_coverage_table( # clc specific
     reads     = d('reads_trimmed.fasta'),
     reference = d('orfs/predicted_orfs.fna'),
     clc_table = d('refs/reads_versus_orfs.txt'),
@@ -109,7 +109,7 @@ make_coverage_table( # clc specific
 
 # make subsystems table from coverage table
 # TODO split up into 4 hierarchy tables
-make_subsystems_table(
+clc_subsystems_table(
     reads          = d('reads_trimmed.fasta'),
     subsnames      = 'db/seed_ss.txt',
     coverage_table = d('tables/orfs_coverage.txt'),
@@ -117,13 +117,13 @@ make_subsystems_table(
 )
 
 # GET OTU COVERAGE
-reference_assemble(
+clc_reference_assemble(
     query     = d('reads_trimmed.fasta'),
     reference = 'db/taxcollector.fa',
     out       = d('refs/reads_vs_taxcollector.txt'),
 )
 
-make_otu_coverage_table(
+clc_otu_coverage_table(
     reads     = d('reads_trimmed.fasta'),
     reference = 'db/taxcollector.fa',
     clc_table = d('refs/reads_vs_taxcollector.txt'),

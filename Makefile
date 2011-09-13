@@ -1,6 +1,9 @@
 bin:
 	mkdir bin
 
+db:
+    mkdir db
+
 bin/velvetg: bin
 	curl -O http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.1.05.tgz
 	tar -zxvf velvet_1.1.05.tgz
@@ -21,5 +24,8 @@ bin/phmmer: bin
 	cd hmmer-3.0; ./configure; make; cd -
 	mv hmmer-3.0/src/phmmer bin/
 	rm -r hmmer-3.0
+
+db/seed.fasta: db
+    curl -O http://
 
 all: bin bin/velvetg bin/prodigal bin/phmmer

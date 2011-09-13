@@ -1,3 +1,6 @@
+# Classes for dealing with different sequence file formats
+# FASTQ, FASTA, QSEQ
+
 class Dna:
     ''' memory-efficient fasta/q/ file iterator '''
     def __init__(self, handle, type='fasta'):

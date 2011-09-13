@@ -104,7 +104,7 @@ prepare_seed(
 )
 
 # reference assemble
-reference_assemble( # clc specific
+clc_reference_assemble( # clc specific
     reference = d('orfs/predicted_orfs.fna'),
     out       = d('refs/reads_versus_orfs.txt'),
     query     = [
@@ -113,15 +113,15 @@ reference_assemble( # clc specific
         ('unpaired', d('singletons_right.fastq')) ],
 )
 
-# make coverage table
-make_coverage_table( # clc specific
+# make coverage table (clc)
+clc_coverage_table(
     reference = d('orfs/predicted_orfs.fna'),
     clc_table = d('refs/reads_versus_orfs.txt'),
     phmmer    = d('anno/proteins_flat.txt'),
     out       = d('tables/orfs_coverage.txt'),
 )
 
-# make subsystems table from coverage table
+# make subsystems table from coverage table (clc)
 make_subsystems_table(
     subsnames      = 'db/seed_ss.txt',
     coverage_table = d('tables/orfs_coverage.txt'),
@@ -135,7 +135,7 @@ make_subsystems_table(
 )
 
 ## GET OTU COVERAGE
-reference_assemble(
+clc_reference_assemble(
     reference = 'db/taxcollector.fa',
     out       = d('refs/reads_vs_taxcollector.txt'),
     query     = [
@@ -153,13 +153,13 @@ reference_assemble(
 ) for p in phylo ]
 
 # Convert from CLC table to text-file
-[ assembly_table(
+[ clc_assembly_table(
     input  = d('refs/%s.clc' % p),
     out    = d('refs/%s.txt' % p)
 ) for p in phylo ]
 
 # Make coverage table (at a certain level)
-[ make_otu_coverage_table(
+[ clc_make_otu_coverage_table(
     reference    = 'db/taxcollector.fa',
     clc_table    = d('refs/reads_vs_taxcollector.txt'),
     reads_format = 'fastq',
