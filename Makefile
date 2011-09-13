@@ -23,6 +23,13 @@ bin/phmmer: bin
 	tar -zxvf hmmer-3.0.tar.gz
 	cd hmmer-3.0; ./configure; make; cd -
 	mv hmmer-3.0/src/phmmer bin/
-	rm -r hmmer-3.0
+	rm -r hmmer-3.0*
 
-all: bin bin/velvetg bin/prodigal bin/phmmer
+# TODO: add support for other architectures
+bin/smalt: bin
+	curl -O ftp://ftp.sanger.ac.uk/pub4/resources/software/smalt/smalt-0.5.7.tgz
+	tar -zxvf smalt-0.5.7.tgz
+	mv smalt-0.5.7/smalt_MacOSX_i386 bin/smalt
+	rm -rf smalt-0.5.7*
+
+all: bin bin/velvetg bin/prodigal bin/phmmer bin/smalt
