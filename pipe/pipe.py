@@ -362,8 +362,7 @@ def make_otu_coverage_table(**ops):
                     start, end = m
                     orf_name = orf_name[start, end]
                 else:
-                    print >> sys.stderr, orf_name
-                    continue # what to do in this sitation ??
+                    orf_name = 'NULL'
             
             print >> handle, '%s\t%s' % (orf_name, count)
 
