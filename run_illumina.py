@@ -32,16 +32,18 @@ ohai('running pipeline!')
     d('refs'),
     d('tables') ] ]
 
-trim_pairs(
-    left_mates  = open(left_mates),
-    right_mates = open(right_mates),
-    out_left    = d('singletons_left.fastq'),
-    out_right   = d('singletons_right.fastq'),
-    out         = d('reads_trimmed.fastq'),
-    cutoff      = cutoff
-)
+# trim_pairs(
+#     left_mates  = open(left_mates),
+#     right_mates = open(right_mates),
+#     out_left    = d('singletons_left.fastq'),
+#     out_right   = d('singletons_right.fastq'),
+#     out         = d('reads_trimmed.fastq'),
+#     cutoff      = cutoff
+# )
 
-# ASSEMBLE W/ VELVET
+def velvet(**p):
+    print p
+
 kmers = {
      31: d('contigs_31'),
      51: d('contigs_51'),
@@ -57,6 +59,8 @@ kmers = {
     outdir = kmers[k],
     k      = k
 ) for k in kmers ]
+
+quit()
 
 # run final assembly
 # type of assembly depends on whether or not contigs from first
