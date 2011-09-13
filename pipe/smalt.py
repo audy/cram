@@ -1,6 +1,7 @@
 # For using SMALT reference assembler
 
 from helps import *
+import os
 
 def smalt_index(**ops):
     ''' build reference index '''
@@ -33,4 +34,36 @@ def smalt_map(**ops):
 def smalt_coverage_table(**opse):
     ''' generate coverage table from smalt cigar output '''
     # this should be easy :)
-    pass
+    
+    assembly = ops['assembly']
+    phmmer   = ops['phmmer']
+
+    # TODO add skip if completed
+
+    from collections import defaultdict
+    coverage = defaultdict(int)
+    
+    with open(assembly) as handle:
+        for line in handle:
+            line = line.split()
+            target = line[6]
+            coverage[target] += 1
+
+    # load phmmer output table to get figids from ORF names
+    target_to_figid = {}
+    with open(phmmer) as handle:
+        for line in handle:
+            if line.startswith('#'): continue
+            line = line.strip().split()
+
+            figid, target = line[0], line[2]
+
+            assert target not in target_to_figid
+
+            target_to_figid[target] = figid
+
+    # print coverage table
+    with open(out) as handle:
+        for target in coverage:
+            figid = target_to_figid.get(target, target)
+            print >> handle "%s\t%s" % (figid, coverage[figid])
