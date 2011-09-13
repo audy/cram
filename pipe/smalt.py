@@ -31,12 +31,13 @@ def smalt_map(**ops):
     
     run(cmd, generates=out)
     
-def smalt_coverage_table(**opse):
+def smalt_coverage_table(**ops):
     ''' generate coverage table from smalt cigar output '''
     # this should be easy :)
     
     assembly = ops['assembly']
     phmmer   = ops['phmmer']
+    out      = ops['out']
 
     # TODO add skip if completed
 
@@ -66,4 +67,4 @@ def smalt_coverage_table(**opse):
     with open(out) as handle:
         for target in coverage:
             figid = target_to_figid.get(target, target)
-            print >> handle "%s\t%s" % (figid, coverage[figid])
+            print >> handle, "%s\t%s" % (figid, coverage[figid])

@@ -126,14 +126,22 @@ elif ref == 'SMALT':
         smalt_map(
             query = q,
             reference = d('orfs/predicted_orfs'),
-            out = d('refs/reads_vs_orfs.cigar'),
+            out = d('refs/%s.cigar' % os.path.basename(q)),
             identity = 0.80)
  
     queries = glob('out/*.fastq') 
     map(f, queries)
     
     # make coverage table
-    pass
+    smalt_coverage_table(
+        assembly = d('refs/%s.cigar' % os.path.basename(q)),
+        phmmer   = d('anno/proteins_flat.txt'),
+        out      = d('tables/%s_coverage.txt' % os.path.basename(q)))
+
+    # concatenate assembly coverage tables
+    ohai('concatenating assembly coverage tables')
+    coverage_tables = glob(d('tables/*_coverage.txt')
+    run('cat %s > %s' % (' '.join(coverage_tables), d('tables/orfs_coverage.txt')), generates=d('tables/orfs_coverage.txt'))
 
 prepare_seed(
     seed = 'db/seed.fasta',
