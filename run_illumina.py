@@ -8,6 +8,9 @@ right_mates = 'data/s73.qseq'
 # BEGIN:
 
 from pipe import *
+from glob import glob
+
+ref = 'SMALT' # 'CLC'
 
 # check if user ran make    
 if not os.path.exists('bin'):
@@ -22,7 +25,6 @@ phylo = {
     'phylum': { 'num': 2, 'sim': 0.80 },
     'genus': { 'num': 8, 'sim': 0.95 },
 }
-
 
 ohai('running pipeline!')
 
@@ -45,9 +47,7 @@ trim_pairs(
 )
 
 ## ASSEMBLE WITH VELVET
-
 # 3 sub assemblies:
-
 kmers = {
      31: d('contigs_31'),
      51: d('contigs_51'),
@@ -65,15 +65,14 @@ kmers = {
 ) for k in kmers ]
 
 # run final assembly
-
 velvet(
     reads    = [('fasta', 'long', d('contigs_%s/contigs.fa' % k)) for k in kmers],
     outdir   = d('contigs_final'),
     k        = 51
 )
 
-## PREDICT OPEN READING FRAMES
 
+## PREDICT OPEN READING FRAMES
 prodigal(
     input  = d('contigs_final/contigs.fa'),
     out    = d('orfs/predicted_orfs') # prefix*
@@ -90,11 +89,41 @@ phmmer(
 run('misc/flatten_phmmer.py out/anno/proteins.txt.table > out/anno/proteins_flat.txt',
     generates='out/anno/proteins_flat.txt')
 
-## GET ORF COVERAGE
+## GET ORF COVERAGE using CLC
 
 # create table connecting seed and subsystems
 # seed_sequence_number -> system;subsystem;subsubsystem;enzyme
 # use this later to make functions tables
+
+if ref == 'CLC':
+    # reference assemble
+    clc_reference_assemble( # clc specific
+        reference = d('orfs/predicted_orfs.fna'),
+        out       = d('refs/reads_versus_orfs.txt'),
+        query     = [
+            ('unpaired', d('reads_trimmed.fastq')),
+            ('unpaired', d('singletons_left.fastq')),
+            ('unpaired', d('singletons_right.fastq')) ])
+
+    # make coverage table (clc)
+    clc_coverage_table(
+        reference = d('orfs/predicted_orfs.fna'),
+        clc_table = d('refs/reads_versus_orfs.txt'),
+        phmmer    = d('anno/proteins_flat.txt'),
+        out       = d('tables/orfs_coverage.txt'))
+elif ref == 'SMALT':
+    # index reference database
+    smalt_index(
+        reference='db/seed.fasta',
+        name='seed')
+    
+    # reference assemble
+    [ smalt_map(
+        query = d(query)
+        reference = 'db/seed') for query in glob('out/*.fastq')]
+
+    # make coverage table
+    pass
 
 prepare_seed(
     seed = 'db/seed.fasta',
@@ -103,26 +132,8 @@ prepare_seed(
     out  = 'db/seed_ss.txt'
 )
 
-# reference assemble
-clc_reference_assemble( # clc specific
-    reference = d('orfs/predicted_orfs.fna'),
-    out       = d('refs/reads_versus_orfs.txt'),
-    query     = [
-        ('unpaired', d('reads_trimmed.fastq')),
-        ('unpaired', d('singletons_left.fastq')),
-        ('unpaired', d('singletons_right.fastq')) ],
-)
-
-# make coverage table (clc)
-clc_coverage_table(
-    reference = d('orfs/predicted_orfs.fna'),
-    clc_table = d('refs/reads_versus_orfs.txt'),
-    phmmer    = d('anno/proteins_flat.txt'),
-    out       = d('tables/orfs_coverage.txt'),
-)
-
-# make subsystems table from coverage table (clc)
-make_subsystems_table(
+# make subsystems table from coverage table
+subsystems_table(
     subsnames      = 'db/seed_ss.txt',
     coverage_table = d('tables/orfs_coverage.txt'),
     out            = d('tables/subsystems_coverage.txt'),
@@ -135,34 +146,38 @@ make_subsystems_table(
 )
 
 ## GET OTU COVERAGE
-clc_reference_assemble(
-    reference = 'db/taxcollector.fa',
-    out       = d('refs/reads_vs_taxcollector.txt'),
-    query     = [
-        ('unpaired', d('reads_trimmed.fastq')),
-        ('unpaired', d('singletons_left.fastq')),
-        ('unpaired', d('singletons_right.fastq')) ],
-)
+if ref == 'CLC':    
+    clc_reference_assemble(
+        reference = 'db/taxcollector.fa',
+        out       = d('refs/reads_vs_taxcollector.txt'),
+        query     = [
+            ('unpaired', d('reads_trimmed.fastq')),
+            ('unpaired', d('singletons_left.fastq')),
+            ('unpaired', d('singletons_right.fastq')) ],
+    )
 
-# Filter CLC output
-[ clc_filter(
-    assembly   = d('refs/reads_vs_taxcollector.txt.clc'),
-    similarity = phylo[p]['sim'],
-    length     = 0.80,
-    out        = d('refs/%s.clc' % p)
-) for p in phylo ]
+    # Filter CLC output
+    [ clc_filter(
+        assembly   = d('refs/reads_vs_taxcollector.txt.clc'),
+        similarity = phylo[p]['sim'],
+        length     = 0.80,
+        out        = d('refs/%s.clc' % p)
+    ) for p in phylo ]
 
-# Convert from CLC table to text-file
-[ clc_assembly_table(
-    input  = d('refs/%s.clc' % p),
-    out    = d('refs/%s.txt' % p)
-) for p in phylo ]
+    # Convert from CLC table to text-file
+    [ clc_assembly_table(
+        input  = d('refs/%s.clc' % p),
+        out    = d('refs/%s.txt' % p)
+    ) for p in phylo ]
 
-# Make coverage table (at a certain level)
-[ clc_make_otu_coverage_table(
-    reference    = 'db/taxcollector.fa',
-    clc_table    = d('refs/reads_vs_taxcollector.txt'),
-    reads_format = 'fastq',
-    out          = d('tables/%s.txt' % p),
-    level        = phylo[p]['num']
-) for p in phylo ]
+    # Make coverage table (at a certain level)
+    [ clc_make_otu_coverage_table(
+        reference    = 'db/taxcollector.fa',
+        clc_table    = d('refs/reads_vs_taxcollector.txt'),
+        reads_format = 'fastq',
+        out          = d('tables/%s.txt' % p),
+        level        = phylo[p]['num']
+    ) for p in phylo ]
+    
+elif ref == 'SMALT':
+    pass
