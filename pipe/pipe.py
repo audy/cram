@@ -1,9 +1,6 @@
 # encoding: utf-8
 
-import os
 import sys
-import time
-import re
 
 from dnaio import *
 from helps import *

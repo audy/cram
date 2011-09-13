@@ -1,3 +1,8 @@
+# encoding: utf-8
+
+import time
+import os
+
 def log(s):
     ''' updates log file '''
     message = "%s\t%s" % (time.strftime('%c'), s)

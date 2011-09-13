@@ -6,6 +6,8 @@
 # make_otu_coverage_table
 # make_coverage_table
 
+import re
+
 def clc_filter(**ops):
     ''' filter clc output generating more clc output
     

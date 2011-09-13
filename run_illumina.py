@@ -11,6 +11,7 @@ from pipe import *
 from glob import glob
 
 ref = 'SMALT' # 'CLC'
+out = 'out'
 
 # check if user ran make    
 if not os.path.exists('bin'):
@@ -18,7 +19,7 @@ if not os.path.exists('bin'):
 
 # Creates a simple function to prepend the output directory
 # to the directory/filename you specify
-d = get_outdir('out')
+d = get_outdir(out)
 
 # Define how to filter taxonomic matches
 phylo = {
@@ -118,10 +119,12 @@ elif ref == 'SMALT':
         name='seed')
     
     # reference assemble
-    [ smalt_map(
-        query = d(query)
-        reference = 'db/seed') for query in glob('out/*.fastq')]
-
+    queries = [ d(q) for q in glob('out/*.fastq') ]
+    for query in queries:
+        ohai('smalt mapping %s' % query)
+        smalt_map(
+            query = query,
+            reference = 'db/seed')
     # make coverage table
     pass
 
