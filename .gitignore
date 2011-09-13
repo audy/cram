@@ -5,3 +5,4 @@ bin/*
 all_lengths.txt
 out/*
 data/*
+*.lic
