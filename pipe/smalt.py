@@ -4,12 +4,11 @@ from helps import *
 
 def smalt_index(**ops):
     ''' build reference index '''
-    reference = ['reference']
-    name      = ['name']
+    reference = ops['reference']
+    name      = ops['name']
     
-    cmd = 'smalt index %s %s' % (reference, name)
-    
-    run(cmd, generates='%s.smi')
+    cmd = 'smalt index %s %s' % (name, reference)
+    run(cmd, generates='%s.smi' % name)
 
 def smalt_map(**ops):
     ''' reference assemble using smalt '''
@@ -27,7 +26,7 @@ def smalt_map(**ops):
     
     # reference assemble creating .cigar files
     
-    cmd = 'smalt map -y %s -o %s %s %s' % (identity, out, reference, query)
+    cmd = 'smalt map -n %s -y %s -o %s %s %s > /dev/null' % (threads, identity, out, reference, query)
     
     run(cmd, generates=out)
     
