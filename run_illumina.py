@@ -115,16 +115,23 @@ if ref == 'CLC':
 elif ref == 'SMALT':
     # index reference database
     smalt_index(
-        reference='db/seed.fasta',
-        name='seed')
+        reference=d('orfs/predicted_orfs.fna'),
+        name=d('orfs/predicted_orfs'))
     
     # reference assemble
-    queries = [ d(q) for q in glob('out/*.fastq') ]
-    for query in queries:
-        ohai('smalt mapping %s' % query)
+    # (in parallel)
+
+    def f(q):
+        ohai('smalt mapping %s' % q)
         smalt_map(
-            query = query,
-            reference = 'db/seed')
+            query = q,
+            reference = d('orfs/predicted_orfs'),
+            out = d('refs/reads_vs_orfs.cigar'),
+            identity = 0.80)
+ 
+    queries = glob('out/*.fastq') 
+    map(f, queries)
+    
     # make coverage table
     pass
 
