@@ -21,6 +21,12 @@ def trim_pairs(**ops):
     
     from itertools import izip
     
+    counts = {
+        'pairs': 0,
+        'left':  0,
+        'right': 0,
+    }
+    
     for left, right in izip(left_mates, right_mates):
         left_trimmed, right_trimmed = Trim.trim(left), Trim.trim(right)
         
@@ -30,13 +36,16 @@ def trim_pairs(**ops):
         elif len(right_trimmed) < cutoff:
             # keep left pair
             print >> out_left, left_trimmed.fastq
+            counts[left] += 1
         elif len(left_trimmed) < cutoff:
             # keep right pair
             print >> out_right, right_trimmed.fastq
+            counts[right] += 1
         else:
             # both are good, keep both!
             print >> out_trimmed, left_trimmed.fastq
             print >> out_trimmed, right_trimmed.fastq
+            print counts[pairs] += 1
     
     # way too many file handles :[
     out_left.close()
@@ -44,6 +53,9 @@ def trim_pairs(**ops):
     out_trimmed.close()
     left_mates.close()
     right_mates.close()
+    
+    # return read counts
+    return counts
 
 
 class Trim():
