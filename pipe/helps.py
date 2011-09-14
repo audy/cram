@@ -56,7 +56,7 @@ def ohno(s):
     print '\n ✖ %s' % (s)
     quit(1)
 
-def run(cmd, generates=False, force=False):
+def run(cmd, generates=False, force=False, silent=False):
     ''' Runs a system command unless output exists unless forced.
     Prints a message when it's done'
     
@@ -73,6 +73,13 @@ def run(cmd, generates=False, force=False):
     >>> run('ls helps.py > /dev/null', generates='helps.py', force=True)
      ✓ forced
      ✓ complete
+    
+    # raises an error if the exit status isn't 0'
+    # >>> run('thisisnotacommand')
+    
+    # remove the log file without logging or printing a message or logging :)
+    >>> run('rm log.txt', silent=True)
+    
     '''
     
     # check if output already exists, skip if it does.
@@ -80,7 +87,7 @@ def run(cmd, generates=False, force=False):
         if type(generates) == str:
                 generates = [generates]
         for f in generates:
-            if os.path.exists(f):    
+            if os.path.exists(f) and not silent:    
                 okay('skipping')
                 return
     if force:
@@ -90,14 +97,15 @@ def run(cmd, generates=False, force=False):
     if res == 0:
         if generates:
             okay('complete')
-        else:
+        elif not silent:
             okay(cmd)
     else:
         if generates:
             for f in generates:
                 if os.path.exists(f):
                     os.unlink(f)
-        ohno(cmd)
+        if not silent:
+            ohno(cmd)
 
 if __name__ == '__main__':
     import doctest
