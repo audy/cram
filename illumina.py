@@ -150,11 +150,13 @@ prepare_seed(
 # make subsystems table from coverage table
 # but first load read counts
 # TODO make function?
-import json
-with open(d('tables/read_counts.json')) as handle:
-    read_counts = json.loads(handle.read())
-total_reads = sum(read_counts.values())
-    
+# import json
+# with open(d('tables/read_counts.json')) as handle:
+#     read_counts = json.loads(handle.read())
+# total_reads = sum(read_counts.values())
+
+total_reads = 0
+
 subsystems_table(
     subsnames      = 'db/seed_ss.txt',
     coverage_table = d('tables/orfs_coverage.txt'),
