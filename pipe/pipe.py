@@ -6,7 +6,17 @@ from dnaio import *
 from helps import *
 
 def prepare_seed(**ops):
-    ''' create table of seed_id -> subsystems '''
+    ''' Create table of seed_id -> subsystems for use later when creating
+    subsystem coverage tables with make_subsystem_table()
+    
+    >>> prepare_seed(
+    ...    seed = '../test/sample_seed.fna',
+    ...    peg  = '../test/subsystems2peg',
+    ...    role = '../test/subsystems2role',
+    ...    out  = '/dev/null'
+    ... )
+     ✪ generating subsystems table
+    '''
     
     ohai('generating subsystems table')
     if os.path.exists(ops['out']):
@@ -136,3 +146,8 @@ def subsystems_table(**ops):
         print >> handle, "TOTAL\t%s" % total_reads
         for s in sorted(merged_counts, key = lambda x: merged_counts[x], reverse=True):
             print >> handle, "%s\t%s" % (s, merged_counts[s])
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
