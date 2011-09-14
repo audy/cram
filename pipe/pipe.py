@@ -6,10 +6,20 @@ from dnaio import *
 from helps import *
 
 def prepare_seed(**ops):
-    ''' create table of seed_id -> subsystems '''
+    ''' Create table of seed_id -> subsystems for use later when creating
+    subsystem coverage tables with make_subsystem_table()
+    
+    >>> prepare_seed(
+    ...    seed = '../test/sample_seed.fna',
+    ...    peg  = '../test/subsystems2peg',
+    ...    role = '../test/subsystems2role',
+    ...    out  = '/dev/null'
+    ... )
+     ✪ generating subsystems table
+    '''
     
     ohai('generating subsystems table')
-    if os.path.exists(ops['out']):
+    if os.path.exists(ops['out']) and '/dev' not in ops['out']:
         okay('skipping')
         return
         
@@ -59,9 +69,13 @@ def prepare_seed(**ops):
                 
                 print >> out, "%s\t%s" % (fig, names)
 
-def make_subsystems_table(**ops):
+def subsystems_table(**ops):
     ''' converts a coverage table to a subsystems table given
-    the figid -> subsystems info '''
+    the figid -> subsystems info
+    
+    
+    
+    '''
     
     # TODO: I used to take into account CLC's paired-end data and get the
     # LCA of the two proteins if they didn't match. However, I stopped doing
@@ -76,8 +90,7 @@ def make_subsystems_table(**ops):
     subsnames      = ops['subsnames']
     coverage_table = ops['coverage_table']
     out            = ops['out']
-    reads          = ops['reads']
-    reads_type     = ops.get('reads_type', 'fasta')
+    total_reads    = ops.get('total_reads', 'N/A')
     
     ohai('creating subsystems table')
     if os.path.exists(out):
@@ -85,20 +98,7 @@ def make_subsystems_table(**ops):
         return
     
     # get total number of reads
-    from itertools import count
-    c = count()
 
-    print 'counting reads'
-
-    if type(reads) in (list, tuple):
-        for r in reads:
-            with open(r) as handle:
-                for i in Dna(handle, type=reads_type):
-                    total_reads = c.next()
-    elif type(reads) is str:
-        with open(reads) as handle:
-            for i in Dna(handle, type=reads_type):
-                total_reads = c.next()
                 
     print 'loading names'
     
@@ -150,3 +150,8 @@ def make_subsystems_table(**ops):
         print >> handle, "TOTAL\t%s" % total_reads
         for s in sorted(merged_counts, key = lambda x: merged_counts[x], reverse=True):
             print >> handle, "%s\t%s" % (s, merged_counts[s])
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
