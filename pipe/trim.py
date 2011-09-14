@@ -45,7 +45,7 @@ def trim_pairs(**ops):
             # both are good, keep both!
             print >> out_trimmed, left_trimmed.fastq
             print >> out_trimmed, right_trimmed.fastq
-            print counts[pairs] += 1
+            counts[pairs] += 1
     
     # way too many file handles :[
     out_left.close()

@@ -66,4 +66,4 @@ def smalt_coverage_table(**opse):
     with open(out) as handle:
         for target in coverage:
             figid = target_to_figid.get(target, target)
-            print >> handle "%s\t%s" % (figid, coverage[figid])
+            print >> handle, "%s\t%s" % (figid, coverage[figid])
