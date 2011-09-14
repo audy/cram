@@ -96,7 +96,44 @@ class Dna:
 
 
 class Record:
-    ''' a nucleotide record '''
+    ''' A nucleotide record.
+    
+    # Create a record
+    >>> record = Record('a sequence', 'GATC')
+    
+    # Print record in fasta format
+    >>> print record.fasta
+    >a sequence
+    GATC
+    
+    # Cannot convert fasta -> fastq (no quality information)
+    >>> print record.fastq
+    Traceback (most recent call last):
+    ...
+    IOError: record does not contain quality information
+    
+    # Create a record with quality information
+    >>> record = Record('a sequence with quality', 'GATC', [10, 10, 10, 10])
+    
+    # Print record in fasta format
+    >>> print record.fasta
+    >a sequence with quality
+    GATC
+    
+    # Print record in fastq format
+    >>> print record.fastq
+    @a sequence with quality
+    GATC
+    +a sequence with quality
+    ++++
+    
+    # Printing qseq is not implemented yet
+    >>> print record.qseq
+    Traceback (most recent call last):
+    ...
+    Exception: qseq not implemented!
+    
+    '''
     def __init__(self, *args):
         self.header = args[0]
         self.sequence = args[1]
@@ -126,7 +163,7 @@ class Record:
     @property
     def qseq(self):
         ''' return qseq formatted string '''
-        raise Exception, 'not implemented!'
+        raise Exception, 'qseq not implemented!'
     
     def __str__(self):
         if self.type == 'fasta':
