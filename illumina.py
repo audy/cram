@@ -38,7 +38,7 @@ ohai('running pipeline!')
     d('tables') ] ]
 
 ## TRIM PAIRS BASED ON QUALITY SCORES
-trim_pairs(
+counts = trim_pairs(
     left_mates  = open(left_mates),
     right_mates = open(right_mates),
     out_left    = d('singletons_left.fastq'),
@@ -46,6 +46,12 @@ trim_pairs(
     out         = d('reads_trimmed.fastq'),
     cutoff      = 70
 )
+
+# write read counts to a file for use later
+# (in case script crashes, gets moved)
+import json
+with open(d('tables/read_counts.txt'), 'w') as handle:
+    print >> handle, json.dumps(counts)
 
 ## ASSEMBLE WITH VELVET
 # 3 sub assemblies:
@@ -71,7 +77,6 @@ velvet(
     outdir   = d('contigs_final'),
     k        = 51
 )
-
 
 ## PREDICT OPEN READING FRAMES
 prodigal(
@@ -143,16 +148,19 @@ prepare_seed(
 )
 
 # make subsystems table from coverage table
+# but first load read counts
+# TODO make function?
+import json
+with open(d('tables/read_counts.json')) as handle:
+    read_counts = json.loads(handle.read())
+total_reads = sum(read_counts.values())
+    
 subsystems_table(
     subsnames      = 'db/seed_ss.txt',
     coverage_table = d('tables/orfs_coverage.txt'),
     out            = d('tables/subsystems_coverage.txt'),
     reads_type     = 'fastq',
-    reads          = [
-        d('reads_trimmed.fastq'),
-        d('singletons_left.fastq'),
-        d('singletons_right.fastq')
-    ],
+    total_reads   = total_reads,
 )
 
 ## GET OTU COVERAGE

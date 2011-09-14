@@ -59,7 +59,7 @@ def prepare_seed(**ops):
                 
                 print >> out, "%s\t%s" % (fig, names)
 
-def make_subsystems_table(**ops):
+def subsystems_table(**ops):
     ''' converts a coverage table to a subsystems table given
     the figid -> subsystems info '''
     
@@ -76,8 +76,7 @@ def make_subsystems_table(**ops):
     subsnames      = ops['subsnames']
     coverage_table = ops['coverage_table']
     out            = ops['out']
-    reads          = ops['reads']
-    reads_type     = ops.get('reads_type', 'fasta')
+    total_reads    = ops.get('total_reads', 'N/A')
     
     ohai('creating subsystems table')
     if os.path.exists(out):
@@ -85,20 +84,7 @@ def make_subsystems_table(**ops):
         return
     
     # get total number of reads
-    from itertools import count
-    c = count()
 
-    print 'counting reads'
-
-    if type(reads) in (list, tuple):
-        for r in reads:
-            with open(r) as handle:
-                for i in Dna(handle, type=reads_type):
-                    total_reads = c.next()
-    elif type(reads) is str:
-        with open(reads) as handle:
-            for i in Dna(handle, type=reads_type):
-                total_reads = c.next()
                 
     print 'loading names'
     
