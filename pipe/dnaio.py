@@ -2,7 +2,27 @@
 # FASTQ, FASTA, QSEQ
 
 class Dna:
-    ''' memory-efficient fasta/q/ file iterator '''
+    ''' A memory-efficient fasta/q/ file iterator
+    
+    # parse a fasta file
+    >>> with open('../test/test.fasta') as handle:
+    ...     records = Dna(handle, type='fasta')
+    ...     len([record for record in records])
+    5
+    
+    # parse a fastq file
+    >>> with open('../test/test.fastq') as handle:
+    ...     records = Dna(handle, type='fastq')
+    ...     len([record for record in records])
+    5
+    
+    # parse a qseq file
+    >>> with open('../test/test.qseq') as handle:
+    ...     records = Dna(handle, type='qseq')
+    ...     len([record for record in records])
+    5
+    
+    '''
     def __init__(self, handle, type='fasta'):
         self.handle = handle
         self.type = type
@@ -121,45 +141,6 @@ class Record:
         return '<Record: %s>' % self.header     
         
 
-def test():
-    # TEST FASTA IO
-    fasta_file = \
-'''
-
->header
-sequencesequence
-sequence
-sequencesequencesequencesequence
-
-
->header2
-sequencesequencesequencesequence
-sequence
-sequence'''.split('\n')
-
-    assert len(list(Dna(fasta_file))) == 2
-
-    # fasta -> fastq, CANT HAPPEN!
-    try:
-        list(Dna(fasta_file))[0].fastq
-    except IOError:
-        pass
-    else:
-        raise AssertionError
-    
-    # fastq iterator!
-    fastq_file = \
-'''@header1
-sequencesequencesequence
-+header1
-+qualitescanstartwithaplussign
-@header2
-sequencesequencesequencesequence
-+header2
-moresequenceeyaaayayyyy
-'''.split('\n')
-
-    assert len(list(i.fasta for i in Dna(fastq_file, type='fastq')))
-    
-
-test()
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
