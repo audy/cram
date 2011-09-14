@@ -1,18 +1,37 @@
 # For using SMALT reference assembler
+# encoding: utf-8
 
 from helps import *
 import os
 
 def smalt_index(**ops):
-    ''' build reference index '''
+    ''' build reference index
+    
+    # create an index from a set of reference sequences
+    >>> smalt_index(
+    ... reference = '../test/taxcollector.fa',
+    ... name      = '../test/tc_index')
+     ✓ complete
+     
+    '''
     reference = ops['reference']
     name      = ops['name']
     
-    cmd = 'smalt index %s %s' % (name, reference)
+    cmd = 'smalt index %s %s > /dev/null' % (name, reference)
     run(cmd, generates='%s.smi' % name)
 
 def smalt_map(**ops):
-    ''' reference assemble using smalt '''
+    ''' reference assemble using smalt
+     
+     >>> smalt_map(
+     ... query     = '../test/test.fasta',
+     ... reference = '../test/tc_index',
+     ... identity  = 0.8,
+     ... out       = '../test/smalt_sample_out.txt',
+     ... threads   = 2, # default/max = 8
+     ... )
+      ✓ complete
+    '''
     
     query     = ops['query']
     reference = ops['reference']
@@ -26,20 +45,27 @@ def smalt_map(**ops):
         raise Exception, 'currently SMALT can only deal with one reference at a time'
     
     # reference assemble creating .cigar files
-    
-    cmd = 'smalt map -n %s -y %s -o %s %s %s > /dev/null' % (threads, identity, out, reference, query)
+    cmd = ' '.join([
+        'smalt map',
+        '-n %s' % threads,
+        '-y %s' % identity,
+        '-o %s' % out,
+        '%s' % reference,
+        '%s' % query,
+        '> /dev/null'])
     
     run(cmd, generates=out)
     
 def smalt_coverage_table(**opse):
-    ''' generate coverage table from smalt cigar output '''
+    ''' Generate coverage table from smalt cigar output.    
+    # writing a test for this involves having phmmer data.
+    '''
     # this should be easy :)
     
     assembly = ops['assembly']
     phmmer   = ops['phmmer']
 
     # TODO add skip if completed
-
     from collections import defaultdict
     coverage = defaultdict(int)
     
@@ -67,3 +93,15 @@ def smalt_coverage_table(**opse):
         for target in coverage:
             figid = target_to_figid.get(target, target)
             print >> handle, "%s\t%s" % (figid, coverage[figid])
+
+
+if __name__ == '__main__':
+    # clean up
+    files = [
+        '../test/tc_index*',
+        '../test/smalt_sample_out.txt' ]
+    for f in files:
+        run('rm -f %s' % f, silent=True)
+    
+    import doctest
+    doctest.testmod()
