@@ -5,7 +5,10 @@ from helps import *
 def phmmer(**ops):
     ''' Runs phmmer.
     # This fails because of relative directory bull-ish. Gotta fix this.
-    # >>> phmmer(query = '../test/test.fasta', db = '../test/sample_seed.fna', out = '../test/test_phmmer.out' )
+    # >>> phmmer(
+    # ... query = '../test/test.fasta',
+    # ... db    = '../test/sample_seed.faa',
+    # ... out   = '../test/test_phmmer.out' )
     # ✪ running phmmer: ../test/test.fasta vs. ../test/sample_seed.fna
     # ✓ complete
     '''
