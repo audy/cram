@@ -72,7 +72,6 @@ velvet(
     k        = 51
 )
 
-
 ## PREDICT OPEN READING FRAMES
 prodigal(
     input  = d('contigs_final/contigs.fa'),
@@ -112,6 +111,7 @@ if ref == 'CLC':
         clc_table = d('refs/reads_versus_orfs.txt'),
         phmmer    = d('anno/proteins_flat.txt'),
         out       = d('tables/orfs_coverage.txt'))
+
 elif ref == 'SMALT':
     # index reference database
     smalt_index(
@@ -119,29 +119,28 @@ elif ref == 'SMALT':
         name=d('orfs/predicted_orfs'))
     
     # reference assemble
-    # (in parallel)
-
-    def f(q):
+    queries = glob('out/*.fastq') 
+    for q in queries:
         ohai('smalt mapping %s' % q)
         smalt_map(
-            query = q,
+            query     = q,
             reference = d('orfs/predicted_orfs'),
-            out = d('refs/%s.cigar' % os.path.basename(q)),
-            identity = 0.80)
- 
-    queries = glob('out/*.fastq') 
-    map(f, queries)
-    
-    # make coverage table
-    smalt_coverage_table(
-        assembly = d('refs/%s.cigar' % os.path.basename(q)),
-        phmmer   = d('anno/proteins_flat.txt'),
-        out      = d('tables/%s_coverage.txt' % os.path.basename(q)))
+            out       = d('refs/%s.cigar' % os.path.basename(q)),
+            identity  = 0.80)
+        
+        ohai('coverage table %s' % q)
+        # make coverage table
+        smalt_coverage_table(
+            assembly = d('refs/%s.cigar' % os.path.basename(q)),
+            phmmer   = d('anno/proteins_flat.txt'),
+            out      = d('tables/%s_coverage.txt' % os.path.basename(q)))
 
     # concatenate assembly coverage tables
     ohai('concatenating assembly coverage tables')
-    coverage_tables = glob(d('tables/*_coverage.txt')
-    run('cat %s > %s' % (' '.join(coverage_tables), d('tables/orfs_coverage.txt')), generates=d('tables/orfs_coverage.txt'))
+    coverage_tables = glob(d('tables/*_coverage.txt'))
+    run('cat %s > %s' % \
+        (' '.join(coverage_tables), d('tables/orfs_coverage.txt')),
+        generates=d('tables/SMALT_orfs_coverage.txt'))
 
 prepare_seed(
     seed = 'db/seed.fasta',
@@ -151,10 +150,10 @@ prepare_seed(
 )
 
 # make subsystems table from coverage table
-subsystems_table(
+make_subsystems_table(
     subsnames      = 'db/seed_ss.txt',
-    coverage_table = d('tables/orfs_coverage.txt'),
-    out            = d('tables/subsystems_coverage.txt'),
+    coverage_table = d('tables/%s_orfs_coverage.txt' % ref),
+    out            = d('tables/%s_subsystems_coverage.txt' % ref),
     reads_type     = 'fastq',
     reads          = [
         d('reads_trimmed.fastq'),
@@ -191,9 +190,9 @@ if ref == 'CLC':
     # Make coverage table (at a certain level)
     [ clc_make_otu_coverage_table(
         reference    = 'db/taxcollector.fa',
-        clc_table    = d('refs/reads_vs_taxcollector.txt'),
+        clc_table    = d('refs/%s_reads_vs_taxcollector.txt' % ref),
         reads_format = 'fastq',
-        out          = d('tables/%s.txt' % p),
+        out          = d('tables/%s_%s.txt' % (ref, p)),
         level        = phylo[p]['num']
     ) for p in phylo ]
     
