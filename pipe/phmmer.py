@@ -20,7 +20,7 @@ def phmmer(**ops):
     # this up.
     
     phmmer = ' '.join([
-        '/bin/phmmer',
+        'bin/phmmer',
         '--notextw',
         '--domE 0.001',
         '--incE 0.00001',
