@@ -33,21 +33,28 @@ def smalt_map(**ops):
     
 def smalt_coverage_table(**ops):
     ''' generate coverage table from smalt cigar output '''
-    # this should be easy :)
     
+    # NOTE there are tools that do this automatically
+    # from the other alignment formats that smalt can
+    # generate
+
     assembly = ops['assembly']
     phmmer   = ops['phmmer']
     out      = ops['out']
 
-    # TODO add skip if completed
+    # skip if already completed
+    if os.path.exists(out):
+        okay('skipping')
+        return
 
     from collections import defaultdict
     coverage = defaultdict(int)
-    
+   
+    # measure orf coverage
     with open(assembly) as handle:
         for line in handle:
             line = line.split()
-            target = line[6]
+            target = line[5]
             coverage[target] += 1
 
     # load phmmer output table to get figids from ORF names
@@ -64,7 +71,7 @@ def smalt_coverage_table(**ops):
             target_to_figid[target] = figid
 
     # print coverage table
-    with open(out) as handle:
+    with open(out, 'w') as handle:
         for target in coverage:
             figid = target_to_figid.get(target, target)
-            print >> handle, "%s\t%s" % (figid, coverage[figid])
+            print >> handle, "%s\t%s" % (figid, coverage[target])
