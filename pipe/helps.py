@@ -87,6 +87,9 @@ def run(cmd, generates=False, force=False, silent=False):
         if type(generates) == str:
                 generates = [generates]
         for f in generates:
+            # dont skip if output is to std*
+            if f in ['/dev/null', '/dev/stdout', '/dev/stderr']:
+                break
             if os.path.exists(f) and not silent:    
                 okay('skipping')
                 return

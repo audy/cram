@@ -19,7 +19,7 @@ def prepare_seed(**ops):
     '''
     
     ohai('generating subsystems table')
-    if os.path.exists(ops['out']):
+    if os.path.exists(ops['out']) and '/dev' not in ops['out']:
         okay('skipping')
         return
         
@@ -71,7 +71,11 @@ def prepare_seed(**ops):
 
 def subsystems_table(**ops):
     ''' converts a coverage table to a subsystems table given
-    the figid -> subsystems info '''
+    the figid -> subsystems info
+    
+    
+    
+    '''
     
     # TODO: I used to take into account CLC's paired-end data and get the
     # LCA of the two proteins if they didn't match. However, I stopped doing
