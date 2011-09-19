@@ -103,7 +103,9 @@ if ref == 'CLC':
         query     = [
             ('unpaired', d('reads_trimmed.fastq')),
             ('unpaired', d('singletons_left.fastq')),
-            ('unpaired', d('singletons_right.fastq')) ])
+            ('unpaired', d('singletons_right.fastq'))
+        ]
+    )
 
     # make coverage table (clc)
     clc_coverage_table(
