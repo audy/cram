@@ -175,9 +175,10 @@ def clc_coverage_table(**ops):
     keep = set(n_to_counts.keys())
 
     # get names of references that we care about
-    # XXX start counting at 1 or 0?
+    
     c, n_to_orf = count(), {}
     n_to_orf[-1] = 'unmatched'
+
     with open(reference) as handle:
         for line in handle:
             if line.startswith('>'):
