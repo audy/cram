@@ -145,7 +145,7 @@ elif ref == 'SMALT':
     ohai('concatenating assembly coverage tables')
     coverage_tables = glob(d('tables/*_coverage.txt'))
     run('cat %s > %s' % \
-        (' '.join(coverage_tables), d('tables/orfs_coverage.txt')),
+        (' '.join(coverage_tables), d('tables/SMALT_orfs_coverage.txt')),
         generates=d('tables/SMALT_orfs_coverage.txt'))
 
 prepare_seed(
