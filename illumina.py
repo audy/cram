@@ -112,7 +112,8 @@ if ref == 'CLC':
         reference = d('orfs/predicted_orfs.fna'),
         clc_table = d('refs/reads_versus_orfs.txt'),
         phmmer    = d('anno/proteins_flat.txt'),
-        out       = d('tables/orfs_coverage.txt'))
+        out       = d('tables/orfs_coverage.txt')
+    )
 
 elif ref == 'SMALT':
     # index reference database
