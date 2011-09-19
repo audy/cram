@@ -115,8 +115,9 @@ if ref == 'CLC':
 elif ref == 'SMALT':
     # index reference database
     smalt_index(
-        reference=d('orfs/predicted_orfs.fna'),
-        name=d('orfs/predicted_orfs'))
+        reference = d('orfs/predicted_orfs.fna'),
+        name      = d('orfs/predicted_orfs')
+    )
     
     # reference assemble
     queries = glob('out/*.fastq') 
@@ -126,21 +127,24 @@ elif ref == 'SMALT':
             query     = q,
             reference = d('orfs/predicted_orfs'),
             out       = d('refs/%s.cigar' % os.path.basename(q)),
-            identity  = 0.80)
+            identity  = 0.80
+        )
         
         ohai('coverage table %s' % q)
         # make coverage table
         smalt_coverage_table(
             assembly = d('refs/%s.cigar' % os.path.basename(q)),
             phmmer   = d('anno/proteins_flat.txt'),
-            out      = d('tables/%s_coverage.txt' % os.path.basename(q)))
+            out      = d('tables/%s_coverage.txt' % os.path.basename(q))
+        )
 
     # concatenate assembly coverage tables
     ohai('concatenating assembly coverage tables')
     coverage_tables = glob(d('tables/*_coverage.txt'))
     run('cat %s > %s' % \
         (' '.join(coverage_tables), d('tables/SMALT_orfs_coverage.txt')),
-        generates=d('tables/SMALT_orfs_coverage.txt'))
+        generates=d('tables/SMALT_orfs_coverage.txt')
+    )
 
 prepare_seed(
     seed = 'db/seed.fasta',
