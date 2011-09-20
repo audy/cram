@@ -135,9 +135,10 @@ def subsystems_table(**ops):
             # TODO I really ought to create a test for this as it's pretty
             # crucial and breakeable
             for i in range(len(subsystems)):
+              for i, s in enumerate(subsystems):
+                  if s == '':
+                      subsystems[i] = 'unnamed_subsystem'
                 hierarchy = ';'.join(subsystems[:i])
-                if hierarchy == '':
-                    continue
                 merged_counts[hierarchy] += count
     
     with open(out, 'w') as handle:
