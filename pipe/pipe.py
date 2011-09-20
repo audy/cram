@@ -18,7 +18,7 @@ def prepare_seed(**ops):
      ✪ generating subsystems table
     '''
     
-    ohai('generating subsystems table')
+    ohai('preparing SEED subsystems database')
     if os.path.exists(ops['out']) and '/dev' not in ops['out']:
         okay('skipping')
         return
@@ -74,6 +74,8 @@ def subsystems_table(**ops):
     the figid -> subsystems info
     
     '''
+
+    ohai('generating subsystems coverage table')
     
     # TODO: I used to take into account CLC's paired-end data and get the
     # LCA of the two proteins if they didn't match. However, I stopped doing
@@ -93,11 +95,6 @@ def subsystems_table(**ops):
     if os.path.exists(out):
         okay('skipping')
         return
-    
-    # get total number of reads
-
-                
-    print 'loading names'
     
     # load subsystem names
     with open(subsnames) as handle:
@@ -140,7 +137,7 @@ def subsystems_table(**ops):
             for i in range(len(subsystems)):
                 hierarchy = ';'.join(subsystems[:i])
                 if hierarchy == '':
-                    hierarchy = 'TOTAL'
+                    continue
                 merged_counts[hierarchy] += count
     
     with open(out, 'w') as handle:

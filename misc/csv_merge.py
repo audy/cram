@@ -58,7 +58,7 @@ class Csv(object):
         
     @classmethod    
     def pretty_print(self, d, **args):
-        sep = args.get('sep', '\t')
+        sep = args.get('sep', ',')
         ''' print the table pretty-like'''
         pass
         
@@ -66,12 +66,12 @@ class Csv(object):
 def main():
     
     # MUST LOAD ALL THE TABLES!!!
-    datas = dict( (i, Csv.parse(open(i), separator="\t")) for i in sys.argv[1:] )
+    datas = dict( (i, Csv.parse(open(i), separator=",")) for i in sys.argv[1:] )
 
-    print datas.values()[0]
+    #print datas.values()[0]
     
     # le merge
-    # Csv.careful_merge(datas)
+    Csv.careful_merge(datas)
     
     # Csv.pretty_print(datas)
     # PRINT 'EM!

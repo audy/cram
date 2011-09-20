@@ -60,10 +60,7 @@ def smalt_map(**ops):
 def smalt_coverage_table(**ops):
     ''' generate coverage table from smalt cigar output '''
     
-    # NOTE there are tools that do this automatically
-    # from the other alignment formats that smalt can
-    # generate
-
+    ohai('Generating coverage table from SMALT assembly')
     assembly = ops['assembly']
     phmmer   = ops['phmmer']
     out      = ops['out']

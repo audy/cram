@@ -84,7 +84,7 @@ def clc_otu_coverage_table(**ops):
     if level:
         regex = re.compile(r'\[%s\](.*?)($|;\[)' % level)
 
-    ohai('creating coverage table')
+    ohai('Creating OTU Coverage table from CLC assembly')
     if os.path.exists(out):
         okay('skipping')
         return
