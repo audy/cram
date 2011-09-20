@@ -90,14 +90,15 @@ def smalt_coverage_table(**ops):
             assert target not in target_to_figid
             target_to_figid[target] = figid
 
+
     # print coverage table
     with open(out, 'w') as handle:
         for target in coverage:
-            # XXX DICTIONARY CHANGES SIZE DURING ITERATION?
+            # Get figid from target (ORF id)
+            # Keep ORF name if unidentified.
             figid = target_to_figid.get(target, target)
-            if figid in coverage:
-                reads = coverage.get(figid)
-                print >> handle, "%s\t%s" % (figid, reads)
+            reads = coverage.get(target, 0)
+            print >> handle, "%s\t%s" % (figid, reads)
 
 
 if __name__ == '__main__':
