@@ -89,18 +89,18 @@ def smalt_coverage_table(**ops):
         for line in handle:
             if line.startswith('#'): continue
             line = line.strip().split()
-
             figid, target = line[0], line[2]
-
             assert target not in target_to_figid
-
             target_to_figid[target] = figid
 
     # print coverage table
     with open(out, 'w') as handle:
         for target in coverage:
+            # XXX DICTIONARY CHANGES SIZE DURING ITERATION?
             figid = target_to_figid.get(target, target)
-            print >> handle, "%s\t%s" % (figid, coverage[figid])
+            if figid in coverage:
+                reads = coverage.get(figid)
+                print >> handle, "%s\t%s" % (figid, reads)
 
 
 if __name__ == '__main__':
