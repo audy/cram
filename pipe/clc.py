@@ -65,7 +65,7 @@ def clc_reference_assemble(**ops):
     run(clc, generates=ops['out'] + '.clc')
 
     # generate assembly table
-    assembly_table(
+    clc_assembly_table(
         input  = ops['out'] + '.clc',
         out    = ops['out']
     )
