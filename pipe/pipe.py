@@ -73,8 +73,6 @@ def subsystems_table(**ops):
     ''' converts a coverage table to a subsystems table given
     the figid -> subsystems info
     
-    
-    
     '''
     
     # TODO: I used to take into account CLC's paired-end data and get the
@@ -90,7 +88,6 @@ def subsystems_table(**ops):
     subsnames      = ops['subsnames']
     coverage_table = ops['coverage_table']
     out            = ops['out']
-    total_reads    = ops.get('total_reads', 'N/A')
     
     ohai('creating subsystems table')
     if os.path.exists(out):
@@ -135,7 +132,7 @@ def subsystems_table(**ops):
             # in the SEED database and it's still useful to have
             # them in the subsystems table. However, we append
             # 'unidentified' at the beginning
-            subsystems = fig_to_name.get(figid, 'UNIDENTIFIED;' + figid).split(';')
+            subsystems = fig_to_name.get(figid, figid).split(';')
             
             # This merges subsystem hierarchies and sums their counts
             # TODO I really ought to create a test for this as it's pretty
@@ -147,7 +144,6 @@ def subsystems_table(**ops):
                 merged_counts[hierarchy] += count
     
     with open(out, 'w') as handle:
-        print >> handle, "TOTAL\t%s" % total_reads
         for s in sorted(merged_counts, key = lambda x: merged_counts[x], reverse=True):
             print >> handle, "%s\t%s" % (s, merged_counts[s])
 
