@@ -6,3 +6,5 @@ all_lengths.txt
 out/*
 data/*
 *.lic
+*.smi
+*.sma
