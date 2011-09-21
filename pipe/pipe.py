@@ -49,7 +49,7 @@ def prepare_seed(**ops):
             
             assert(len(line) == 4)
             
-            a, b, c, d = line
+            a, c, b, d = line
             
             name_to_ss[d] = [b, a, c]
     
@@ -138,8 +138,8 @@ def subsystems_table(**ops):
               for i, s in enumerate(subsystems):
                   if s == '':
                       subsystems[i] = 'unnamed_subsystem'
-                hierarchy = ';'.join(subsystems[:i])
-                merged_counts[hierarchy] += count
+                  hierarchy = ';'.join(subsystems[:i])
+                  merged_counts[hierarchy] += count
     
     with open(out, 'w') as handle:
         for s in sorted(merged_counts, key = lambda x: merged_counts[x], reverse=True):
