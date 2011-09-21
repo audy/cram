@@ -143,7 +143,14 @@ elif ref == 'SMALT':
 
     # concatenate assembly coverage tables
     ohai('concatenating assembly coverage tables')
-    coverage_tables = glob(d('tables/*_coverage.txt'))
+    
+    # TODO make this nicer:
+    coverage_tables = [ d('tables/%s' % i) for i in [
+        'singletons_left.fastq_coverage.txt',
+        'singletons_right.fastq_coverage.txt',
+        'reads_trimmed.fastq_coverage.txt',
+        ]]
+    
     run('cat %s > %s' % \
         (' '.join(coverage_tables), d('tables/SMALT_orfs_coverage.txt')),
         generates=d('tables/SMALT_orfs_coverage.txt')
