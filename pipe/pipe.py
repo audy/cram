@@ -49,9 +49,9 @@ def prepare_seed(**ops):
             
             assert(len(line) == 4)
             
-            a, c, b, d = line
+            a, c, b, d = line[1], line[2], line[0], line[3]
             
-            name_to_ss[d] = [b, a, c]
+            name_to_ss[d] = [a, b, c]
     
     # Print table, using SEED headers
     with open(ops['seed']) as handle, open(ops['out'], 'w') as out:

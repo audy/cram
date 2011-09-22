@@ -62,7 +62,7 @@ def smalt_coverage_table(**ops):
     
     ohai('Generating coverage table from SMALT assembly')
     assembly = ops['assembly']
-    phmmer   = ops['phmmer']
+    phmmer   = ops.get('phmmer', False)
     out      = ops['out']
 
     # skip if already completed
@@ -82,14 +82,14 @@ def smalt_coverage_table(**ops):
 
     # load phmmer output table to get figids from ORF names
     target_to_figid = {}
-    with open(phmmer) as handle:
-        for line in handle:
-            if line.startswith('#'): continue
-            line = line.strip().split()
-            figid, target = line[0], line[2]
-            assert target not in target_to_figid
-            target_to_figid[target] = figid
-
+    if phmmer:
+        with open(phmmer) as handle:
+            for line in handle:
+                if line.startswith('#'): continue
+                line = line.strip().split()
+                figid, target = line[0], line[2]
+                assert target not in target_to_figid
+                target_to_figid[target] = figid
 
     # print coverage table
     with open(out, 'w') as handle:

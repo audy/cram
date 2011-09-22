@@ -36,16 +36,16 @@ def trim_pairs(**ops):
         elif len(right_trimmed) < cutoff:
             # keep left pair
             print >> out_left, left_trimmed.fastq
-            counts[left] += 1
+            counts['left'] += 1
         elif len(left_trimmed) < cutoff:
             # keep right pair
             print >> out_right, right_trimmed.fastq
-            counts[right] += 1
+            counts['right'] += 1
         else:
             # both are good, keep both!
             print >> out_trimmed, left_trimmed.fastq
             print >> out_trimmed, right_trimmed.fastq
-            counts[pairs] += 1
+            counts['pairs'] += 1
     
     # way too many file handles :[
     out_left.close()

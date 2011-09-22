@@ -10,7 +10,7 @@ right_mates = 'data/s73.qseq'
 from pipe import *
 from glob import glob
 
-ref = 'CLC' # 'CLC'
+ref = 'SMALT'
 out = 'out'
 
 # check if user ran make    
@@ -129,27 +129,23 @@ elif ref == 'SMALT':
         smalt_map(
             query     = q,
             reference = d('orfs/predicted_orfs'),
-            out       = d('refs/%s.cigar' % os.path.basename(q)),
+            out       = d('refs/%s_vs_orfs.cigar' % os.path.basename(q)),
             identity  = 0.80
         )
         
         ohai('coverage table %s' % q)
         # make coverage table
         smalt_coverage_table(
-            assembly = d('refs/%s.cigar' % os.path.basename(q)),
+            assembly = d('refs/%s_vs_orfs.cigar' % os.path.basename(q)),
             phmmer   = d('anno/proteins_flat.txt'),
-            out      = d('tables/%s_coverage.txt' % os.path.basename(q))
+            out      = d('tables/%s_seed_coverage.txt' % os.path.basename(q))
         )
 
     # concatenate assembly coverage tables
     ohai('concatenating assembly coverage tables')
     
     # TODO make this nicer:
-    coverage_tables = [ d('tables/%s' % i) for i in [
-        'singletons_left.fastq_coverage.txt',
-        'singletons_right.fastq_coverage.txt',
-        'reads_trimmed.fastq_coverage.txt',
-        ]]
+    coverage_tables = glob(d('tables/*_seed_coverage.txt'))
     
     run('cat %s > %s' % \
         (' '.join(coverage_tables), d('tables/SMALT_orfs_coverage.txt')),
@@ -205,4 +201,31 @@ if ref == 'CLC':
     ) for p in phylo ]
     
 elif ref == 'SMALT':
-    pass
+    smalt_index(
+        reference = 'db/taxcollector.fa', 
+        name      = 'db/taxcollector'
+    )
+    
+    # reference assemble
+    queries = glob('out/*.fastq') 
+    for q in queries:
+        ohai('smalt mapping %s' % q)
+        smalt_map(
+            query     = q,
+            reference = 'db/taxcollector',
+            out       = d('refs/%s_vs_taxcollector.cigar' % os.path.basename(q)),
+            identity  = 0.80
+        )
+        
+    ohai('coverage table %s' % q)
+    # make coverage table
+    smalt_coverage_table(
+        assembly = d('refs/%s_vs_taxcollector.cigar' % os.path.basename(q)),
+        out      = d('tables/%s_otu_coverage.txt' % os.path.basename(q))
+    )
+    coverage_tables = glob(d('tables/*_otu_coverage.txt'))
+
+    run('cat %s > %s' % \
+        (' '.join(coverage_tables), d('tables/SMALT_otu_coverage.txt')),
+        generates=d('tables/SMALT_otu_coverage.txt')
+    )
