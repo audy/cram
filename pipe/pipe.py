@@ -138,9 +138,9 @@ def subsystems_table(**ops):
             for i in range(len(subsystems)):
               for i, s in enumerate(subsystems):
                   if s == '':
-                      subsystems[i] = 'unnamed_subsystem'
-                hierarchy = ';'.join(subsystems[:i])
-                merged_counts[hierarchy] += count
+                      subsystems[i] = '-'
+              hierarchy = ';'.join(subsystems[:i])
+              merged_counts[hierarchy] += count
     
     with open(out, 'w') as handle:
         for s in sorted(merged_counts, key = lambda x: merged_counts[x], reverse=True):
