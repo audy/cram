@@ -105,7 +105,8 @@ def subsystems_table(**ops):
             figid, name = line.strip().split('\t')
             
             # what if this happens?
-            assert figid not in fig_to_name
+            if figid in fig_to_name:
+                    assert name == fig_to_name[figid]
             
             fig_to_name[figid] = name
     
