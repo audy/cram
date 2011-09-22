@@ -35,15 +35,16 @@ ohai('running pipeline!')
     d('orfs'),
     d('anno'),
     d('refs'),
-    d('tables') ] ]
+    d('tables'),
+    d('trimmed') ] ]
 
 ## TRIM PAIRS BASED ON QUALITY SCORES
 counts = trim_pairs(
     left_mates  = open(left_mates),
     right_mates = open(right_mates),
-    out_left    = d('singletons_left.fastq'),
-    out_right   = d('singletons_right.fastq'),
-    out         = d('reads_trimmed.fastq'),
+    out_left    = d('trimmed/singletons_left.fastq'),
+    out_right   = d('trimmed/singletons_right.fastq'),
+    out         = d('trimmed/reads_trimmed.fastq'),
     cutoff      = 70
 )
 
@@ -57,9 +58,9 @@ kmers = {
 
 [ velvet(
     reads = [
-        ('fastq', 'shortPaired', d('reads_trimmed.fastq')),
-        ('fastq', 'short', d('singletons_left.fastq')),
-        ('fastq', 'short', d('singletons_right.fastq'))
+        ('fastq', 'shortPaired', d('trimmed/reads_trimmed.fastq')),
+        ('fastq', 'short', d('trimmed/singletons_left.fastq')),
+        ('fastq', 'short', d('trimmed/singletons_right.fastq'))
     ],
     outdir = kmers[k],
     k      = k
@@ -101,9 +102,9 @@ if ref == 'CLC':
         reference = d('orfs/predicted_orfs.fna'),
         out       = d('refs/reads_versus_orfs.txt'),
         query     = [
-            ('unpaired', d('reads_trimmed.fastq')),
-            ('unpaired', d('singletons_left.fastq')),
-            ('unpaired', d('singletons_right.fastq'))
+            ('unpaired', d('trimmed/reads_trimmed.fastq')),
+            ('unpaired', d('trimmed/singletons_left.fastq')),
+            ('unpaired', d('trimmed/singletons_right.fastq'))
         ]
     )
 
@@ -172,9 +173,9 @@ if ref == 'CLC':
         reference = 'db/taxcollector.fa',
         out       = d('refs/reads_vs_taxcollector.txt'),
         query     = [
-            ('unpaired', d('reads_trimmed.fastq')),
-            ('unpaired', d('singletons_left.fastq')),
-            ('unpaired', d('singletons_right.fastq')) ],
+            ('unpaired', d('trimmed/reads_trimmed.fastq')),
+            ('unpaired', d('trimmed/singletons_left.fastq')),
+            ('unpaired', d('trimmed/singletons_right.fastq')) ],
     )
 
     # Filter CLC output
