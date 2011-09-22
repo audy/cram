@@ -1,3 +1,4 @@
+log.txt
 db/*
 bin/*
 *.pyc
@@ -6,3 +7,5 @@ all_lengths.txt
 out/*
 data/*
 *.lic
+*.smi
+*.sma

@@ -10,7 +10,7 @@ right_mates = 'data/s73.qseq'
 from pipe import *
 from glob import glob
 
-ref = 'SMALT' # 'CLC'
+ref = 'CLC' # 'CLC'
 out = 'out'
 
 # check if user ran make    
@@ -168,7 +168,6 @@ subsystems_table(
     coverage_table = d('tables/%s_orfs_coverage.txt' % ref),
     out            = d('tables/%s_subsystems_coverage.txt' % ref),
     reads_type     = 'fastq',
-    total_reads   = total_reads,
 )
 
 ## GET OTU COVERAGE
