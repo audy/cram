@@ -64,7 +64,7 @@ velvet(
 
 # PREDICT OPEN READING FRAMES
 prodigal(
-    input  = d('final_contigs/contigs.fa'),
+    input  = d('contigs_final/contigs.fa'),
     out    = d('orfs/predicted_orfs') # prefix*
 )
  
