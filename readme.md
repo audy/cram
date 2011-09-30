@@ -25,13 +25,15 @@ The pipelines perform the following steps
 Made for UNIX-like operating systems. Tested with Python 2.7.
 
 ```bash
-
 make all # downloads and install binaries to bin/
-make db # downloads databases to db/
-
+make db  # downloads databases to db/
 ```
 
 ## Usage
+
+CRAM is invoked via the command-line.
+
+### Setting up an experiment
 
 CRAM is meant to be run on one sample at a time. Outputs are then combined to create tables that can be used to perform comparative analysis.
 
@@ -40,6 +42,9 @@ Raw reads go into the `data/` directory. For 454, these reads are expected to be
 The directory structure looks like this:
 
 ```
+# Main Directory
+cram/
+
 # Input
 cram/data               # Raw Reads
 cram/db                 # Databases
@@ -58,3 +63,22 @@ cram/out/
 ```
 
 CRAM checks for output files and will skip any steps that have already been completed. If you want to re-do a step, delete the appropriate output directory or file(s).
+
+I suggest making a new CRAM directory for each sample. If you use Git, this can easily be achieved by the command:
+
+`git clone http://github.com/audy/cram.git <experiment-name>`
+
+This will clone a fresh copy of CRAM into your experiment directory. However, the `db/` and `bin/` directories will be empty. Instead of copying these directories (which can be large), use symbolic links.
+
+```bash
+ln -s experiment1/db/* exerpiment2/db/*
+ln -s experiment1/bin/* experiment2/bin/*
+```
+
+This will save space and create consistency between experiments
+
+### Merging Output
+
+Output tables can be merged into Functional and Taxonomic Abundancy Matrices. These matrices can be merged allowing for standardization, normalization, visualization and analysis of results.
+
+There are scripts located in the `misc/` directory to help achieve this.
