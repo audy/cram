@@ -22,15 +22,39 @@ The pipelines perform the following steps
 
 ## Installation
 
-Tested on Mac OSX and Ubuntu using Python 2.7.
+Made for UNIX-like operating systems. Tested with Python 2.7.
 
-Before installing, make sure you have the following:
+```bash
 
-- A unix-like operating system (Mac OS X, Ubuntu, _et cetera_).
-- A licensed copy of [CLC Assembly Cell 3](http://clcbio.com).
+make all # downloads and install binaries to bin/
+make db # downloads databases to db/
 
-Download and extract the pipeline, and type `make install` in the directory. This will download and install Phmmer, Prodigal, & Velvet.
-
-Type `make databases` to download and create necessary databases (SEED, RDP-TaxCollector).
+```
 
 ## Usage
+
+CRAM is meant to be run on one sample at a time. Outputs are then combined to create tables that can be used to perform comparative analysis.
+
+Raw reads go into the `data/` directory. For 454, these reads are expected to be in FASTQ format. For Illumina, they are expected to be in QSEQ format.
+
+The directory structure looks like this:
+
+```
+# Input
+cram/data               # Raw Reads
+cram/db                 # Databases
+
+# Output
+cram/out/               
+├── trimmed             # Trimmed reads
+├── contigs_31          # contigs at K = 31
+├── contigs_51          #                51
+├── contigs_71          #                71
+├── contigs_final       # Previous assemblies joined, assembled w/ K = 51
+├── orfs                # ORF predictions
+├── anno                # PHMMER protein annotations
+├── refs                # Reference assemblies
+└── tables              # Output tables
+```
+
+CRAM checks for output files and will skip any steps that have already been completed. If you want to re-do a step, delete the appropriate output directory or file(s).
