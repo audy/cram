@@ -2,8 +2,10 @@
 # encoding: utf-8
 
 # location of left and right mate pairs
-left_mates = 'data/s71.qseq'
-right_mates = 'data/s73.qseq'
+left_mates = 'data/left.qseq'
+right_mates = 'data/right.qseq'
+
+READ_FORMAT = 'qseq'
 
 # BEGIN:
 
@@ -40,12 +42,13 @@ ohai('running pipeline!')
 
 ## TRIM PAIRS BASED ON QUALITY SCORES
 counts = trim_pairs(
-    left_mates  = open(left_mates),
-    right_mates = open(right_mates),
-    out_left    = d('trimmed/singletons_left.fastq'),
-    out_right   = d('trimmed/singletons_right.fastq'),
-    out         = d('trimmed/reads_trimmed.fastq'),
-    cutoff      = 70
+    left_mates   = open(left_mates),
+    right_mates  = open(right_mates),
+    input_format = READ_FORMAT,
+    out_left     = d('trimmed/singletons_left.fastq'),
+    out_right    = d('trimmed/singletons_right.fastq'),
+    out          = d('trimmed/reads_trimmed.fastq'),
+    cutoff       = 70
 )
 
 ## ASSEMBLE WITH VELVET
