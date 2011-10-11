@@ -1,5 +1,8 @@
 PLATFORM = $(shell uname)
 
+data:
+	mkdir data
+
 bin:
 	mkdir bin
 
@@ -8,9 +11,9 @@ db:
 
 binaries: bin/velvetg bin/prodigal bin/phmmer bin/smalt
 
-databases: db/subsystems2peg db/subsystems2role db/seed.fasta
+databases: db/subsystems2peg db/subsystems2role db/seed.fasta db/taxcollector.fa
 
-all: binaries databases
+all: binaries databases data
 
 bin/velvetg: bin
 	curl -O http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.1.05.tgz
