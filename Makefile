@@ -1,8 +1,16 @@
+PLATFORM = $(shell uname)
+
 bin:
 	mkdir bin
 
 db:
 	mkdir db
+
+binaries: bin/velvetg bin/prodigal bin/phmmer bin/smalt
+
+databases: db/subsystems2peg db/subsystems2role db/seed.fasta
+
+all: binaries databases
 
 bin/velvetg: bin
 	curl -O http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.1.05.tgz
@@ -25,11 +33,24 @@ bin/phmmer: bin
 	mv hmmer-3.0/src/phmmer bin/
 	rm -r hmmer-3.0*
 
-# TODO: add support for other architectures
 bin/smalt: bin
 	curl -O ftp://ftp.sanger.ac.uk/pub4/resources/software/smalt/smalt-0.5.7.tgz
 	tar -zxvf smalt-0.5.7.tgz
-	mv smalt-0.5.7/smalt_MacOSX_i386 bin/smalt
+	%if $(PLATFORM) == Darwin
+		mv smalt-0.5.7/smalt_MacOSX_i386 bin/smalt
+	%elif $(PLATFORM) == Linux
+		mv smalt-0.5.7/smalt_i686 bin/smalt
+	%endif
 	rm -rf smalt-0.5.7*
 
-all: bin bin/velvetg bin/prodigal bin/phmmer bin/smalt
+db/subsystems2peg: db
+ 	curl ftp://ftp.theseed.org/subsystems/subsystems2peg.gz | gunzip > db/subsystems2peg
+
+db/subsystems2role: db
+	curl ftp://ftp.theseed.org/subsystems/subsystems2role.gz | gunzip > db/subsystems2peg
+
+db/taxcollector.fa: db
+	curl http://microgator.org/taxcollector.fa.gz | gunzip > db/taxcollector.fa
+
+db/seed.fasta: db
+	curl ftp://ftp.theseed.org/genomes/SEED/SEED.fasta.gz | gunzip > db/seed.fasta
