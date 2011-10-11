@@ -12,7 +12,6 @@ READ_FORMAT = 'qseq'
 from pipe import *
 from glob import glob
 
-ref = 'SMALT'
 out = 'out'
 
 # check if user ran make    
@@ -98,63 +97,41 @@ run('misc/flatten_phmmer.py out/anno/proteins.txt.table > out/anno/proteins_flat
 # create table connecting seed and subsystems
 # seed_sequence_number -> system;subsystem;subsubsystem;enzyme
 # use this later to make functions tables
+# index reference database
+smalt_index(
+    reference = d('orfs/predicted_orfs.fna'),
+    name      = d('orfs/predicted_orfs')
+)
 
-if ref == 'CLC':
-    # reference assemble
-    clc_reference_assemble( # clc specific
-        reference = d('orfs/predicted_orfs.fna'),
-        out       = d('refs/reads_versus_orfs.txt'),
-        query     = [
-            ('unpaired', d('trimmed/reads_trimmed.fastq')),
-            ('unpaired', d('trimmed/singletons_left.fastq')),
-            ('unpaired', d('trimmed/singletons_right.fastq'))
-        ]
-    )
-
-    # make coverage table (clc)
-    clc_coverage_table(
-        reference = d('orfs/predicted_orfs.fna'),
-        clc_table = d('refs/reads_versus_orfs.txt'),
-        phmmer    = d('anno/proteins_flat.txt'),
-        out       = d('tables/orfs_coverage.txt')
-    )
-
-elif ref == 'SMALT':
-    # index reference database
-    smalt_index(
-        reference = d('orfs/predicted_orfs.fna'),
-        name      = d('orfs/predicted_orfs')
+# reference assemble
+queries = glob('out/*.fastq') 
+for q in queries:
+    ohai('smalt mapping %s' % q)
+    smalt_map(
+        query     = q,
+        reference = d('orfs/predicted_orfs'),
+        out       = d('refs/%s_vs_orfs.cigar' % os.path.basename(q)),
+        identity  = 0.80
     )
     
-    # reference assemble
-    queries = glob('out/*.fastq') 
-    for q in queries:
-        ohai('smalt mapping %s' % q)
-        smalt_map(
-            query     = q,
-            reference = d('orfs/predicted_orfs'),
-            out       = d('refs/%s_vs_orfs.cigar' % os.path.basename(q)),
-            identity  = 0.80
-        )
-        
-        ohai('coverage table %s' % q)
-        # make coverage table
-        smalt_coverage_table(
-            assembly = d('refs/%s_vs_orfs.cigar' % os.path.basename(q)),
-            phmmer   = d('anno/proteins_flat.txt'),
-            out      = d('tables/%s_seed_coverage.txt' % os.path.basename(q))
-        )
-
-    # concatenate assembly coverage tables
-    ohai('concatenating assembly coverage tables')
-    
-    # TODO make this nicer:
-    coverage_tables = glob(d('tables/*_seed_coverage.txt'))
-    
-    run('cat %s > %s' % \
-        (' '.join(coverage_tables), d('tables/SMALT_orfs_coverage.txt')),
-        generates=d('tables/SMALT_orfs_coverage.txt')
+    ohai('coverage table %s' % q)
+    # make coverage table
+    smalt_coverage_table(
+        assembly = d('refs/%s_vs_orfs.cigar' % os.path.basename(q)),
+        phmmer   = d('anno/proteins_flat.txt'),
+        out      = d('tables/%s_seed_coverage.txt' % os.path.basename(q))
     )
+
+# concatenate assembly coverage tables
+ohai('concatenating assembly coverage tables')
+
+# TODO make this nicer:
+coverage_tables = glob(d('tables/*_seed_coverage.txt'))
+
+run('cat %s > %s' % \
+    (' '.join(coverage_tables), d('tables/SMALT_orfs_coverage.txt')),
+    generates=d('tables/SMALT_orfs_coverage.txt')
+)
 
 prepare_seed(
     seed = 'db/seed.fasta',
@@ -171,65 +148,31 @@ subsystems_table(
 )
 
 ## GET OTU COVERAGE
-if ref == 'CLC':    
-    clc_reference_assemble(
-        reference = 'db/taxcollector.fa',
-        out       = d('refs/reads_vs_taxcollector.txt'),
-        query     = [
-            ('unpaired', d('trimmed/reads_trimmed.fastq')),
-            ('unpaired', d('trimmed/singletons_left.fastq')),
-            ('unpaired', d('trimmed/singletons_right.fastq')) ],
-    )
+smalt_index(
+    reference = 'db/taxcollector.fa', 
+    name      = 'db/taxcollector'
+)
 
-    # Filter CLC output
-    [ clc_filter(
-        assembly   = d('refs/reads_vs_taxcollector.txt.clc'),
-        similarity = phylo[p]['sim'],
-        length     = 0.80,
-        out        = d('refs/%s.clc' % p)
-    ) for p in phylo ]
-
-    # Convert from CLC table to text-file
-    [ clc_assembly_table(
-        input  = d('refs/%s.clc' % p),
-        out    = d('refs/%s.txt' % p)
-    ) for p in phylo ]
-
-    # Make coverage table (at a certain level)
-    [ clc_make_otu_coverage_table(
-        reference    = 'db/taxcollector.fa',
-        clc_table    = d('refs/%s_reads_vs_taxcollector.txt' % ref),
-        reads_format = 'fastq',
-        out          = d('tables/%s_%s.txt' % (ref, p)),
-        level        = phylo[p]['num']
-    ) for p in phylo ]
-    
-elif ref == 'SMALT':
-    smalt_index(
-        reference = 'db/taxcollector.fa', 
-        name      = 'db/taxcollector'
+# reference assemble
+queries = glob('out/*.fastq') 
+for q in queries:
+    ohai('smalt mapping %s' % q)
+    smalt_map(
+        query     = q,
+        reference = 'db/taxcollector',
+        out       = d('refs/%s_vs_taxcollector.cigar' % os.path.basename(q)),
+        identity  = 0.80
     )
     
-    # reference assemble
-    queries = glob('out/*.fastq') 
-    for q in queries:
-        ohai('smalt mapping %s' % q)
-        smalt_map(
-            query     = q,
-            reference = 'db/taxcollector',
-            out       = d('refs/%s_vs_taxcollector.cigar' % os.path.basename(q)),
-            identity  = 0.80
-        )
-        
-    ohai('coverage table %s' % q)
-    # make coverage table
-    smalt_coverage_table(
-        assembly = d('refs/%s_vs_taxcollector.cigar' % os.path.basename(q)),
-        out      = d('tables/%s_otu_coverage.txt' % os.path.basename(q))
-    )
-    coverage_tables = glob(d('tables/*_otu_coverage.txt'))
+ohai('coverage table %s' % q)
+# make coverage table
+smalt_coverage_table(
+    assembly = d('refs/%s_vs_taxcollector.cigar' % os.path.basename(q)),
+    out      = d('tables/%s_otu_coverage.txt' % os.path.basename(q))
+)
+coverage_tables = glob(d('tables/*_otu_coverage.txt'))
 
-    run('cat %s > %s' % \
-        (' '.join(coverage_tables), d('tables/SMALT_otu_coverage.txt')),
-        generates=d('tables/SMALT_otu_coverage.txt')
-    )
+run('cat %s > %s' % \
+    (' '.join(coverage_tables), d('tables/SMALT_otu_coverage.txt')),
+    generates=d('tables/SMALT_otu_coverage.txt')
+)
