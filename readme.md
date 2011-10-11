@@ -2,7 +2,9 @@
 
 Comparative Rapid Annotation of Metagenomes
 
-CRAM is a framework for building pipelines for metagenomic annotation. Two pipelines are included for 454 and Illumina generated metagenomes.
+CRAM is a framework for building pipelines for metagenomic annotation.
+
+Pipelines for Illumina and 454 are included.
 
 CRAM is licensed under the GNU GPL v3 Open Source license.
 
@@ -10,24 +12,21 @@ Austin G. Davis-Richardson
 
 ## Overview
 
-The pipelines perform the following steps
+The pipeline follow these steps.
 
 - Quality Trimming
 - _De Novo_ assembly
 - Open Reading Frame prediction
-- ORF annotation via the SEED database
-- ORF coverage estimation by reference assembly (CLC or SMALT)
+- ORF annotation via the SEED database and PHMMER
+- ORF coverage estimation by reference assembly
 - Subsystem table generation
-- 16S rRNA comparison (CLC or SMALT)
+- 16S rRNA classification using the Ribosomal Database Project 16S rRNA database and TaxCollector.
 
 ## Installation
 
 Made for UNIX-like operating systems. Tested with Python 2.7.
 
-```bash
-make all # downloads and install binaries to bin/
-make db  # downloads databases to db/
-```
+To download and install required binaries and database, simply type `make all` in the terminal.
 
 ## Usage
 
@@ -46,7 +45,7 @@ The directory structure looks like this:
 cram/
 
 # Input
-cram/data               # Raw Reads
+cram/data               # Raw Reads (left.qseq and right.qseq for illumina)
 cram/db                 # Databases
 
 # Output
