@@ -12,8 +12,6 @@ def trim_pairs(**ops):
     
     input_format = ops.get('input_format', 'qseq')
     
-    left_mates  = Dna(ops['left_mates'], type=input_format)
-    right_mates = Dna(ops['right_mates'], type=input_format)
     out_left    = open(ops['out_left'], 'w')
     out_right   = open(ops['out_right'], 'w')
     out_trimmed = open(ops['out'], 'w')
@@ -27,32 +25,34 @@ def trim_pairs(**ops):
         'right': 0,
     }
     
-    for left, right in izip(left_mates, right_mates):
-        left_trimmed, right_trimmed = Trim.trim(left), Trim.trim(right)
+    for h_left, h_right in zip(ops['left_mates'], ops['right_mates']):
+        left_mates  = Dna(h_left, type=input_format)
+        right_mates = Dna(h_right, type=input_format)
+    
+        for left, right in izip(left_mates, right_mates):
+            left_trimmed, right_trimmed = Trim.trim(left), Trim.trim(right)
         
-        if len(right_trimmed) < cutoff and len(left_trimmed) < cutoff:
-            # both reads suck
-            continue
-        elif len(right_trimmed) < cutoff:
-            # keep left pair
-            print >> out_left, left_trimmed.fastq
-            counts['left'] += 1
-        elif len(left_trimmed) < cutoff:
-            # keep right pair
-            print >> out_right, right_trimmed.fastq
-            counts['right'] += 1
-        else:
-            # both are good, keep both!
-            print >> out_trimmed, left_trimmed.fastq
-            print >> out_trimmed, right_trimmed.fastq
-            counts['pairs'] += 1
+            if len(right_trimmed) < cutoff and len(left_trimmed) < cutoff:
+                # both reads suck
+                continue
+            elif len(right_trimmed) < cutoff:
+                # keep left pair
+                print >> out_left, left_trimmed.fastq
+                counts['left'] += 1
+            elif len(left_trimmed) < cutoff:
+                # keep right pair
+                print >> out_right, right_trimmed.fastq
+                counts['right'] += 1
+            else:
+                # both are good, keep both!
+                print >> out_trimmed, left_trimmed.fastq
+                print >> out_trimmed, right_trimmed.fastq
+                counts['pairs'] += 1
     
     # way too many file handles :[
     out_left.close()
     out_right.close()
     out_trimmed.close()
-    left_mates.close()
-    right_mates.close()
     
     # return read counts
     return counts

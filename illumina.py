@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-# location of left and right mate pairs
-left_mates = 'data/left.qseq'
-right_mates = 'data/right.qseq'
-
-READ_FORMAT = 'qseq'
-
-# BEGIN:
-
 from pipe import *
 from glob import glob
 
+# location of left and right mate pairs
+left_mates = glob('data/left*.qseq')
+right_mates = glob('data/right*.qseq')
 out = 'out'
+READ_FORMAT = 'qseq'
 
-# check if user ran make    
+
+# check if user ran make
 if not os.path.exists('bin'):
     ohno('bin/ doesn\'t exist. Did you run make?')
 
@@ -41,8 +38,8 @@ ohai('running pipeline!')
 
 ## TRIM PAIRS BASED ON QUALITY SCORES
 counts = trim_pairs(
-    left_mates   = open(left_mates),
-    right_mates  = open(right_mates),
+    left_mates   = [ open(i) for i in left_mates ],
+    right_mates  = [ open(i) for i in right_mates ],
     input_format = READ_FORMAT,
     out_left     = d('trimmed/singletons_left.fastq'),
     out_right    = d('trimmed/singletons_right.fastq'),
