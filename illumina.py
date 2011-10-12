@@ -8,7 +8,7 @@ from glob import glob
 left_mates = glob('data/left*')
 right_mates = glob('data/right*')
 out = 'out'
-READ_FORMAT = 'qseq'
+READ_FORMAT = 'fastq'
 
 db = {
     'seed': '~/cram/db/seed.fasta',
