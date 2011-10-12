@@ -17,6 +17,9 @@ bin:
 db:
 	mkdir db
 
+update:
+	git pull git@heyaudy.com:git/cram.git master
+
 binaries: bin/velvetg bin/prodigal bin/phmmer bin/smalt
 
 databases: db/subsystems2peg db/subsystems2role db/seed.fasta db/taxcollector.fa
