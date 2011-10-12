@@ -6,7 +6,7 @@ def prodigal(**ops):
     ''' run prodigal '''
     
     prodigal = ' '.join([
-        'bin/prodigal',
+        '~/cram/bin/prodigal',
         '-q',
         '-f gff',
         '-i %(input)s',

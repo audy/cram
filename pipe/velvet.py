@@ -14,12 +14,12 @@ def velvet(**ops):
     read_ops = ['-%s -%s %s' % r for r in ops['reads'] ]
     
     cmd = ' '.join([
-        'bin/velveth',
+        '~/cram/bin/velveth',
         '%(outdir)s',
         '%(k)s']) % ops
         
     velveth = cmd + ' ' + ' '.join(read_ops) + '>/dev/null'
-    velvetg = 'bin/velvetg %(outdir)s -very_clean yes > /dev/null' % ops
+    velvetg = '~/cram/bin/velvetg %(outdir)s -very_clean yes > /dev/null' % ops
     
     ohai('running velveth: %(reads)s, k = %(k)s' % ops)
     run(velveth, generates=ops['outdir']) # run hash algorithm

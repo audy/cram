@@ -5,15 +5,20 @@ from pipe import *
 from glob import glob
 
 # location of left and right mate pairs
-left_mates = glob('data/left*.qseq')
-right_mates = glob('data/right*.qseq')
+left_mates = glob('data/left*')
+right_mates = glob('data/right*')
 out = 'out'
 READ_FORMAT = 'qseq'
 
+db = {
+    'seed': '~/cram/db/seed.fasta',
+    'taxcollector': '~/cram/db/taxcollector.fa',
+    'subsystems2peg': '~/cram/db/subsystems2peg',
+    'subsystems2role': '~/cram/db/subsystems2role',
+    'seed_ss': '~/cram/db/seed_ss.txt',
+}
 
-# check if user ran make
-if not os.path.exists('bin'):
-    ohno('bin/ doesn\'t exist. Did you run make?')
+
 
 # Creates a simple function to prepend the output directory
 # to the directory/filename you specify
@@ -81,7 +86,7 @@ prodigal(
 ## IDENTIFY ORFS WITH PHMMER
 phmmer( 
     query = d('orfs/predicted_orfs.faa'),
-    db    = 'db/seed.fasta',
+    db    = db['seed'],
     out   = d('anno/proteins.txt')
 )
 
@@ -131,14 +136,14 @@ run('cat %s > %s' % \
 )
 
 prepare_seed(
-    seed = 'db/seed.fasta',
-    peg  = 'db/subsystems2peg',
-    role = 'db/subsystems2role',
-    out  = 'db/seed_ss.txt'
+    seed = db['seed'],
+    peg  = db['subsystems2peg'],
+    role = db['subsystems2role'],
+    out  = db['seed_ss.txt']
 )
 
 subsystems_table(
-    subsnames      = 'db/seed_ss.txt',
+    subsnames      = db['seed_ss'],
     coverage_table = d('tables/%s_orfs_coverage.txt' % ref),
     out            = d('tables/%s_subsystems_coverage.txt' % ref),
     reads_type     = 'fastq',
@@ -146,8 +151,8 @@ subsystems_table(
 
 ## GET OTU COVERAGE
 smalt_index(
-    reference = 'db/taxcollector.fa', 
-    name      = 'db/taxcollector'
+    reference = db['taxcollector'], 
+    name      = '~/cram/db/taxcollector'
 )
 
 # reference assemble
@@ -156,7 +161,7 @@ for q in queries:
     ohai('smalt mapping %s' % q)
     smalt_map(
         query     = q,
-        reference = 'db/taxcollector',
+        reference = '~/cram/db/taxcollector',
         out       = d('refs/%s_vs_taxcollector.cigar' % os.path.basename(q)),
         identity  = 0.80
     )

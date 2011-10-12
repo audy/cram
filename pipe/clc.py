@@ -21,7 +21,7 @@ def clc_filter(**ops):
     ohai('clc_filter: %(assembly)s, o=%(out)s, l=%(length)s, s=%(similarity)s')
     
     cmd = ' '.join([
-        'bin/filter_matches',
+        '~/cram/bin/filter_matches',
         '--assembly %(assembly)s',
         '--output %(out)s',
         '--lengthfraction %(length)s',
@@ -34,7 +34,7 @@ def clc_filter(**ops):
 def clc_assembly_table(**ops):
     ''' generate an assembly table from clc output '''
     
-    cmd = 'bin/assembly_table -n -s %(input)s > %(out)s' % ops
+    cmd = '~/cram/bin/assembly_table -n -s %(input)s > %(out)s' % ops
     run(cmd, generates="%(out)s" % ops)
 
 def clc_reference_assemble(**ops):
@@ -52,7 +52,7 @@ def clc_reference_assemble(**ops):
         query_ops = ' '.join("%s %s" % (querytypes[i[0]], i[1]) for i in query)
 
     clc = ' '.join([
-      'bin/clc_ref_assemble_long',
+      '~/cram/bin/clc_ref_assemble_long',
       '-d %(reference)s',
       '-o %(out)s.clc',
       '-a local', # todo, make an option?

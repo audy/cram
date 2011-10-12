@@ -17,7 +17,7 @@ def smalt_index(**ops):
     reference = ops['reference']
     name      = ops['name']
     
-    cmd = 'smalt index %s %s > /dev/null' % (name, reference)
+    cmd = '~/cram/bin/smalt index %s %s > /dev/null' % (name, reference)
     run(cmd, generates='%s.smi' % name)
 
 def smalt_map(**ops):
@@ -46,7 +46,7 @@ def smalt_map(**ops):
     
     # reference assemble creating .cigar files
     cmd = ' '.join([
-        'smalt map',
+        '~/cram/bin/smalt map',
         '-n %s' % threads,
         '-y %s' % identity,
         '-o %s' % out,
