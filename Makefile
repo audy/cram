@@ -8,6 +8,8 @@ ifeq ($(PLATFORM), Linux)
 	SMALT = smalt-0.5.7/smalt_i686
 endif
 
+default: binaries databases data
+
 data:
 	mkdir data
 
@@ -23,8 +25,6 @@ update:
 binaries: bin/velvetg bin/prodigal bin/phmmer bin/smalt
 
 databases: db/subsystems2peg db/subsystems2role db/seed.fasta db/taxcollector.fa
-
-all: binaries databases data
 
 bin/velvetg: bin
 	curl -O http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.1.05.tgz
