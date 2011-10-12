@@ -54,7 +54,7 @@ databases: ~/cram/db/subsystems2peg ~/cram/db/subsystems2role ~/cram/db/seed.fas
 	curl ftp://ftp.theseed.org/subsystems/subsystems2peg.gz | gunzip > ~/cram/db/subsystems2peg
 
 ~/cram/db/subsystems2role:
-	curl ftp://ftp.theseed.org/subsystems/subsystems2role.gz | gunzip > ~/cram/db/subsystems2peg
+	curl ftp://ftp.theseed.org/subsystems/subsystems2role.gz | gunzip > ~/cram/db/subsystems2role
 
 ~/cram/db/taxcollector.fa:
 	curl http://microgator.org/taxcollector.fa.gz | gunzip > ~/cram/db/taxcollector.fa
