@@ -1,5 +1,13 @@
 PLATFORM = $(shell uname)
 
+ifeq ($(PLATFORM), Darwin)
+	SMALT = smalt-0.5.7/smalt_MacOSX_i386
+
+endif
+ifeq ($(PLATFORM), Linux)
+	SMALT = smalt-0.5.7/smalt_i686
+endif
+
 data:
 	mkdir data
 
@@ -19,7 +27,8 @@ bin/velvetg: bin
 	curl -O http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.1.05.tgz
 	tar -zxvf velvet_1.1.05.tgz
 	make -C velvet_1.1.05 velveth velvetg MAXKMERLENGTH=71 OPENMP=1 LONGSEQUENCES=1
-	mv velvet_1.1.05/velvet{g,h} bin/
+	mv velvet_1.1.05/velvetg bin/
+	mv velvet_1.1.05/velveth bin/
 	rm -rf velvet_1.1.05*
 
 bin/prodigal: bin
@@ -39,15 +48,11 @@ bin/phmmer: bin
 bin/smalt: bin
 	curl -O ftp://ftp.sanger.ac.uk/pub4/resources/software/smalt/smalt-0.5.7.tgz
 	tar -zxvf smalt-0.5.7.tgz
-	%if $(PLATFORM) == Darwin
-		mv smalt-0.5.7/smalt_MacOSX_i386 bin/smalt
-	%elif $(PLATFORM) == Linux
-		mv smalt-0.5.7/smalt_i686 bin/smalt
-	%endif
+	mv $(SMALT) bin/smalt
 	rm -rf smalt-0.5.7*
 
 db/subsystems2peg: db
- 	curl ftp://ftp.theseed.org/subsystems/subsystems2peg.gz | gunzip > db/subsystems2peg
+	curl ftp://ftp.theseed.org/subsystems/subsystems2peg.gz | gunzip > db/subsystems2peg
 
 db/subsystems2role: db
 	curl ftp://ftp.theseed.org/subsystems/subsystems2role.gz | gunzip > db/subsystems2peg
