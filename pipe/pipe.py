@@ -54,20 +54,21 @@ def prepare_seed(**ops):
             name_to_ss[d] = [a, b, c]
     
     # Print table, using SEED headers
-    with open(ops['seed']) as handle, open(ops['out'], 'w') as out:
-        for line in handle:
-            if line.startswith('>'):
+    with open(ops['seed']) as handle:
+        with open(ops['out'], 'w') as out:
+            for line in handle:
+                if line.startswith('>'):
                 
-                fig = line.split()[0][1:]
-                name = figs_to_name.get(fig, fig)
-                ss = name_to_ss.get(name, 'NA')
+                    fig = line.split()[0][1:]
+                    name = figs_to_name.get(fig, fig)
+                    ss = name_to_ss.get(name, 'NA')
                 
-                if ss == 'NA':
-                    names = 'NA;%s' % name
-                else:
-                    names = '%s;%s;%s;%s' % (ss[0], ss[1], ss[2], name)
+                    if ss == 'NA':
+                        names = 'NA;%s' % name
+                    else:
+                        names = '%s;%s;%s;%s' % (ss[0], ss[1], ss[2], name)
                 
-                print >> out, "%s\t%s" % (fig, names)
+                    print >> out, "%s\t%s" % (fig, names)
 
 def subsystems_table(**ops):
     ''' converts a coverage table to a subsystems table given
