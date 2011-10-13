@@ -9,7 +9,7 @@ left_mates = glob('data/left*')
 right_mates = glob('data/right*')
 out = 'out'
 READ_FORMAT = 'fastq'
-
+ref = 'SMALT'
 db = {
     'seed': '~/cram/db/seed.fasta',
     'taxcollector': '~/cram/db/taxcollector.fa',
@@ -141,7 +141,7 @@ prepare_seed(
     seed = db['seed'],
     peg  = db['subsystems2peg'],
     role = db['subsystems2role'],
-    out  = db['seed_ss.txt']
+    out  = db['seed_ss']
 )
 
 subsystems_table(
