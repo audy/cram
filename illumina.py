@@ -3,7 +3,7 @@
 
 from pipe import *
 from glob import glob
-
+from os.path import expanduser
 # location of left and right mate pairs
 left_mates = glob('data/left*')
 right_mates = glob('data/right*')
@@ -18,7 +18,9 @@ db = {
     'seed_ss': '~/cram/db/seed_ss.txt',
 }
 
-
+# expand tilde to home directory
+for k in db:
+    db[k] = expanduser(db[k])
 
 # Creates a simple function to prepend the output directory
 # to the directory/filename you specify
