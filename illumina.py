@@ -9,7 +9,7 @@ left_mates = glob('data/left*')
 right_mates = glob('data/right*')
 out = 'out'
 READ_FORMAT = 'fastq'
-
+ref = 'SMALT'
 db = {
     'seed': '~/cram/db/seed.fasta',
     'taxcollector': '~/cram/db/taxcollector.fa',
@@ -141,7 +141,7 @@ prepare_seed(
     seed = db['seed'],
     peg  = db['subsystems2peg'],
     role = db['subsystems2role'],
-    out  = db['seed_ss.txt']
+    out  = db['seed_ss']
 )
 
 subsystems_table(
@@ -152,6 +152,7 @@ subsystems_table(
 )
 
 ## GET OTU COVERAGE
+ohai('building index of taxcollector database')
 smalt_index(
     reference = db['taxcollector'], 
     name      = '~/cram/db/taxcollector'
@@ -168,14 +169,15 @@ for q in queries:
         identity  = 0.80
     )
     
-ohai('coverage table %s' % q)
-# make coverage table
-smalt_coverage_table(
-    assembly = d('refs/%s_vs_taxcollector.cigar' % os.path.basename(q)),
-    out      = d('tables/%s_otu_coverage.txt' % os.path.basename(q))
-)
-coverage_tables = glob(d('tables/*_otu_coverage.txt'))
+    ohai('coverage table %s' % q)
+    # make coverage table
+    smalt_coverage_table(
+        assembly = d('refs/%s_vs_taxcollector.cigar' % os.path.basename(q)),
+        out      = d('tables/%s_otu_coverage.txt' % os.path.basename(q))
+    )
 
+coverage_tables = glob(d('tables/*_otu_coverage.txt'))
+ohai('concatenating OTU coverage tables')
 run('cat %s > %s' % \
     (' '.join(coverage_tables), d('tables/SMALT_otu_coverage.txt')),
     generates=d('tables/SMALT_otu_coverage.txt')
