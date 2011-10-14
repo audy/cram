@@ -14,7 +14,7 @@ def init(args):
     
     # create directory
     if os.path.exists(directory):
-        print >> sys.stderr, "%s exists. Move or delete yourself"
+        print >> sys.stderr, "%s exists. Move or delete yourself" % directory
         quit(-1)
     os.mkdir(directory)
     
@@ -22,7 +22,10 @@ def init(args):
     
     # copy this file to that directory
     with open(script_file, 'w') as output:
-        with open(__file__) as handle:
+        # This is bound to cause problems
+        # but I don't want to write the byte encoded program
+        # TODO find another way
+        with open(__file__.replace('.pyc', '.py')) as handle:
             output.write(handle.read())
             
     ohai('project created in %s' % directory)
