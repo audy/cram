@@ -3,20 +3,34 @@
 
 import sys
 import os
+from os import expanduser
 from glob import glob
-
-# for doing relative imports
-_root_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sys.path.insert(0, _root_dir)
 
 from metacram import *
 
-ohai('ILLUMINA!')
+def init(args):
+    ''' create a project '''
+    
+    directory = args['directory']
+    
+    # create directory
+    if os.path.exists(directory):
+        print >> sys.stderr, "%s exists. Move or delete yourself"
+        quit(-1)
+    os.mkdir(directory)
+    
+    script_file = '%s/illumina.py' % directory
+    
+    # copy this file to that directory
+    with open(script_file, 'w') as output:
+        with open(__file__) as handle:
+            output.write(handle.read())
+            
+    ohai('project created in %s' % directory)
+    ohai('executable: %s' % script_file)
+    
 
-def illumina(**args):
-    ''' parse arguments '''
-
-def pipeline(**args):
+def run(**args):
     ''' the actual pipeline '''
     left_mates = args['left_mates'] # glob('data/left*')
     right_mates = args['right_mates'] # glob('data/right*')
@@ -39,7 +53,7 @@ def pipeline(**args):
     
     # expand tilde to home directory
     for k in db:
-        db[k] = os.expanduser(db[k])
+        db[k] = expanduser(db[k])
 
     # Creates a simple function to prepend the output directory
     # to the directory/filename you specify
@@ -205,7 +219,7 @@ def pipeline(**args):
 if __name__ == '__main__':
     # default parameters
     # should replace this with test.
-    illumina(
+    run(
         left_mates  = glob('data/left*'),
         right_mates = glob('data/right*'),
         read_format = 'qseq'
