@@ -12,4 +12,9 @@ setup(name="metacram",
       url="http://github.com/audy/cramp",
       packages = find_packages(),
       keywords= "bioinformatics metagenome metagenomics",
-      zip_safe = True)
+      zip_safe = True,
+      entry_points = { 
+        'console_scripts':
+        ['metacram = bin.cram:main']
+      }
+      )

@@ -3,7 +3,6 @@
 
 import sys
 import os
-from os import expanduser
 from glob import glob
 
 from metacram import *
@@ -53,7 +52,7 @@ def run(**args):
     
     # expand tilde to home directory
     for k in db:
-        db[k] = expanduser(db[k])
+        db[k] = os.path.expanduser(db[k])
 
     # Creates a simple function to prepend the output directory
     # to the directory/filename you specify
