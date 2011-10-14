@@ -1,11 +1,23 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from pipe import *
+import sys
+import os
 from glob import glob
-from os.path import expanduser
+
+# for doing relative imports
+_root_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, _root_dir)
+
+from metacram import *
+
+ohai('ILLUMINA!')
 
 def illumina(**args):
+    ''' parse arguments '''
+
+def pipeline(**args):
+    ''' the actual pipeline '''
     left_mates = args['left_mates'] # glob('data/left*')
     right_mates = args['right_mates'] # glob('data/right*')
     
@@ -27,7 +39,7 @@ def illumina(**args):
     
     # expand tilde to home directory
     for k in db:
-        db[k] = expanduser(db[k])
+        db[k] = os.expanduser(db[k])
 
     # Creates a simple function to prepend the output directory
     # to the directory/filename you specify
@@ -195,6 +207,6 @@ if __name__ == '__main__':
     # should replace this with test.
     illumina(
         left_mates  = glob('data/left*'),
-        right_mates = glob('data/right*')
+        right_mates = glob('data/right*'),
         read_format = 'qseq'
     )

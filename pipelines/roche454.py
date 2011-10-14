@@ -2,12 +2,17 @@
 # encoding: utf-8
 
 import os
-from pipe import *
+import sys
 from glob import glob
 
-raise NotImplementedError, 'Sorry, 454 support is not supported in this version'
+# for doing relative imports
+_root_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, _root_dir)
+
+from metacram import *
 
 def roche454():
+    raise NotImplementedError, 'Sorry, 454 support is not supported in this version'
     # shorten names a bit
     cutoff = 70
     out    = 'out'

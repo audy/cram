@@ -7,12 +7,15 @@
 
 import sys
 import os
-from lib import *
-from metacram import *
 
+_root_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.insert(0, _root_dir)
+
+import pipelines
 
 def epic_fail():
     print 'epic fail'
+    quit(-1)
 
 # parse arguments
 if len(sys.argv) < 2:
@@ -20,8 +23,7 @@ if len(sys.argv) < 2:
     
 task = sys.argv[1]
 
-
 {
-    'illumina': run_illumina,
-    '454': run_454,
+    'illumina': pipelines.illumina,
+    'roche454': pipelines.roche454,
 }.get(task, epic_fail).__call__()
