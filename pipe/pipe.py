@@ -129,20 +129,31 @@ def subsystems_table(**ops):
             # use figid to get the ss name, or just keep the figid
             # that usually means that the ORF was not identified
             # in the SEED database and it's still useful to have
-            # them in the subsystems table. However, we append
-            # 'unidentified' at the beginning
-            subsystems = fig_to_name.get(figid, figid).split(';')
+            # them in the subsystems table.
             
-            # This merges subsystem hierarchies and sums their counts
-            # TODO I really ought to create a test for this as it's pretty
-            # crucial and breakeable
-            for i in range(len(subsystems)):
-              for i, s in enumerate(subsystems):
-                  if s == '':
-                      subsystems[i] = '-'
-                  hierarchy = ';'.join(subsystems[:i])
-                  merged_counts[hierarchy] += count
-    
+            # TODO group similar ORFs from different samples
+            # maybe add this to "tools"
+            
+            subsystems = fig_to_name.get(figid, figid)
+            
+            if not subsystems.startswith('fig'):
+                # ORF was not identified, just use original name
+                hierarchy = subsystems
+            else:
+                # ORF was identified
+                subsystems = subsystems.split(';')
+                # This merges subsystem hierarchies and sums their counts
+                # TODO I really ought to create a test for this as it's pretty
+                # crucial and breakeable
+                for i in range(len(subsystems)):
+                  for i, s in enumerate(subsystems):
+                      if s == '':
+                          subsystems[i] = '-'
+                      hierarchy = ';'.join(subsystems[:i])
+            
+            # increase count for this subsystem
+            merged_counts[hierarchy] += count
+
     with open(out, 'w') as handle:
         for s in sorted(merged_counts, key = lambda x: merged_counts[x], reverse=True):
             print >> handle, "%s\t%s" % (s, merged_counts[s])
