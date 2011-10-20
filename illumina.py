@@ -149,6 +149,7 @@ subsystems_table(
     coverage_table = d('tables/%s_orfs_coverage.txt' % ref),
     out            = d('tables/%s_subsystems_coverage.txt' % ref),
     reads_type     = 'fastq',
+    unidentified_orfs_out = 'tables/%s_unidentified_orfs_coverage.txt' % ref,
 )
 
 ## GET OTU COVERAGE
