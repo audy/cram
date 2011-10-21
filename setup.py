@@ -15,6 +15,6 @@ setup(name="metacram",
       zip_safe = True,
       entry_points = { 
         'console_scripts':
-        ['metacram = bin.cram:main']
+        ['metacram = metacram.cram-cli:main']
       }
       )
