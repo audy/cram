@@ -135,20 +135,7 @@ def subsystems_table(**ops):
             # TODO group similar ORFs from different samples
             # maybe add this to "tools"
             
-            def split_hierarchies(subsystems):
-                ''' splits a subsystem into hierarchies
-                
-                >>> split_hierarchies('a;b;c;d')
-                ... ['a', 'a;b', 'a;b;c', 'a;b;c;d']
-                '''
-                hierarchies = []
-                for i in range(len(subsystems)):
-                  for i, s in enumerate(subsystems):
-                    if s == '':
-                      subsystems[i] = '-'
-                    hierarchy = ';'.join(subsystems[:i])
-                    hierarchies.append(hierarchy)
-                return hierarchies
+
 
             if figid in fig_to_name:
                 subsystems = fig_to_name[figid]
@@ -165,6 +152,24 @@ def subsystems_table(**ops):
             if not print_unknown and s.startswith('unidentified_orfs;'):
                 continue
             print >> handle, "%s\t%s" % (s, merged_counts[s])
+
+
+def split_hierarchies(subsystems):
+    ''' splits a subsystem into hierarchies
+    
+    >>> split_hierarchies('a;b;c;d')
+    ... ['a', 'a;b', 'a;b;c', 'a;b;c;d']
+    '''
+    
+    hierarchies = []
+    for i in range(len(subsystems)):
+      for i, s in enumerate(subsystems):
+        if s == '':
+          subsystems[i] = '-'
+        hierarchy = ';'.join(subsystems[:i])
+        hierarchies.append(hierarchy)
+    return hierarchies
+
 
 if __name__ == '__main__':
     import doctest
