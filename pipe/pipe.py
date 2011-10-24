@@ -112,11 +112,6 @@ def subsystems_table(**ops):
             
             fig_to_name[figid] = name
     
-    # the output table should look like this:
-    # sys_a,\t10
-    # sys_a;sys_a.1\t5
-    # sys_a;sys_a.2\t5 etc...
-    
     # parse coverage table and output hierarchies based on SEED subsystems
     from collections import defaultdict
     merged_counts = defaultdict(int)
@@ -131,10 +126,6 @@ def subsystems_table(**ops):
             # that usually means that the ORF was not identified
             # in the SEED database and it's still useful to have
             # them in the subsystems table.
-            
-            # TODO group similar ORFs from different samples
-            # maybe add this to "tools"
-            
 
 
             if figid in fig_to_name:
