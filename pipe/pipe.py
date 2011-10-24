@@ -91,6 +91,7 @@ def subsystems_table(**ops):
     subsnames      = ops['subsnames']
     coverage_table = ops['coverage_table']
     out            = ops['out']
+    print_unknown  = ops.get('print_unknown', False)
     
     ohai('creating subsystems table')
     if os.path.exists(out):
@@ -111,11 +112,6 @@ def subsystems_table(**ops):
             
             fig_to_name[figid] = name
     
-    # the output table should look like this:
-    # sys_a,\t10
-    # sys_a;sys_a.1\t5
-    # sys_a;sys_a.2\t5 etc...
-    
     # parse coverage table and output hierarchies based on SEED subsystems
     from collections import defaultdict
     merged_counts = defaultdict(int)
@@ -130,33 +126,40 @@ def subsystems_table(**ops):
             # that usually means that the ORF was not identified
             # in the SEED database and it's still useful to have
             # them in the subsystems table.
-            
-            # TODO group similar ORFs from different samples
-            # maybe add this to "tools"
-            
-            subsystems = fig_to_name.get(figid, figid)
-            
-            if not subsystems.startswith('fig'):
-                # ORF was not identified, just use original name
-                hierarchy = subsystems
-            else:
-                # ORF was identified
+
+
+            if figid in fig_to_name:
+                subsystems = fig_to_name[figid]
                 subsystems = subsystems.split(';')
-                # This merges subsystem hierarchies and sums their counts
-                # TODO I really ought to create a test for this as it's pretty
-                # crucial and breakeable
-                for i in range(len(subsystems)):
-                  for i, s in enumerate(subsystems):
-                      if s == '':
-                          subsystems[i] = '-'
-                      hierarchy = ';'.join(subsystems[:i])
-            
-            # increase count for this subsystem
-            merged_counts[hierarchy] += count
+                hierarchies = split_hierarchies(subsystems)
+                for h in hierarchies:
+                    merged_counts[h] += count
+            else:
+                h = "unidentified_orfs;%s" % figid
+                merged_counts[h] += count
 
     with open(out, 'w') as handle:
         for s in sorted(merged_counts, key = lambda x: merged_counts[x], reverse=True):
+            if not print_unknown and s.startswith('unidentified_orfs;'):
+                continue
             print >> handle, "%s\t%s" % (s, merged_counts[s])
+
+
+def split_hierarchies(subsystems):
+    ''' splits a subsystem into hierarchies
+    
+    >>> split_hierarchies('a;b;c;d')
+    ... ['a', 'a;b', 'a;b;c', 'a;b;c;d']
+    '''
+    
+    hierarchies = []
+    for i in range(len(subsystems)):
+      for i, s in enumerate(subsystems):
+        if s == '':
+          subsystems[i] = '-'
+        hierarchy = ';'.join(subsystems[:i])
+        hierarchies.append(hierarchy)
+    return hierarchies
 
 
 if __name__ == '__main__':
