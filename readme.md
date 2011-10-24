@@ -28,17 +28,31 @@ Made for UNIX-like operating systems. Tested with Python 2.7.
 
 To download and install required binaries and database, simply type `make all` in the terminal.
 
+Databases and executables will be stored in `~/cram/db` and `~/cram/bin/`.
+
 ## Usage
 
 CRAM is invoked via the command-line.
 
 ### Setting up an experiment
 
-CRAM is meant to be run on one sample at a time. Outputs are then combined to create tables that can be used to perform comparative analysis.
+CRAM is a collection of tools used for creating metagenomics pipelines. Pipelines are defined in scripts that follow this pattern:
 
-Raw reads go into the `data/` directory. For 454, these reads are expected to be in FASTQ format. For Illumina, they are expected to be in QSEQ format.
+```python
 
-The directory structure looks like this:
+from metacram import *
+
+# do metagenome things using metacram
+
+```
+
+There are two pipelines included with this packages: Illumina and Roche 454 for analyzing metagenomes produced by their respective sequencing technologies. To define your own pipeline, see the docs.
+
+One can create a project for analyzing an Illumina metagenome like this:
+
+`metacram illumina ~/baby_drool_microbiome/`
+
+A CRAM Project contains the pipeline script and a directory structure that contains the output of the various analyses that looks like this:
 
 ```
 # Main Directory
@@ -63,16 +77,7 @@ cram/out/
 
 CRAM checks for output files and will skip any steps that have already been completed. If you want to re-do a step, delete the appropriate output directory or file(s).
 
-I suggest making a new CRAM directory for each sample. If you use Git, this can easily be achieved by the command:
-
-`git clone http://github.com/audy/cram.git <experiment-name>`
-
 This will clone a fresh copy of CRAM into your experiment directory. However, the `db/` and `bin/` directories will be empty. Instead of copying these directories (which can be large), use symbolic links.
-
-```bash
-ln -s experiment1/db/* exerpiment2/db/*
-ln -s experiment1/bin/* experiment2/bin/*
-```
 
 This will save space and create consistency between experiments
 
@@ -80,4 +85,4 @@ This will save space and create consistency between experiments
 
 Output tables can be merged into Functional and Taxonomic Abundancy Matrices. These matrices can be merged allowing for standardization, normalization, visualization and analysis of results.
 
-There are scripts located in the `misc/` directory to help achieve this.
+There are scripts located in the `tools/` directory to help achieve this.
