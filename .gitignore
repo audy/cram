@@ -1,3 +1,4 @@
 *.pyc
 *.smi
 *.sma
+doc/_build
