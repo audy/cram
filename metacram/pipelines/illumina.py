@@ -7,31 +7,6 @@ from glob import glob
 
 from metacram import *
 
-def init(args):
-    ''' create a project '''
-    
-    directory = args['directory']
-    
-    # create directory
-    if os.path.exists(directory):
-        print >> sys.stderr, "%s exists. Move or delete yourself" % directory
-        quit(-1)
-    os.mkdir(directory)
-    
-    script_file = '%s/illumina.py' % directory
-    
-    # copy this file to that directory
-    with open(script_file, 'w') as output:
-        # This is bound to cause problems
-        # but I don't want to write the byte encoded program
-        # TODO find another way
-        with open(__file__.replace('.pyc', '.py')) as handle:
-            output.write(handle.read())
-            
-    ohai('project created in %s' % directory)
-    ohai('executable: %s' % script_file)
-    
-
 def run(**args):
     ''' the actual pipeline '''
     left_mates = args['left_mates'] # glob('data/left*')
@@ -219,8 +194,6 @@ def run(**args):
     )
 
 if __name__ == '__main__':
-    # default parameters
-    # should replace this with test.
     run(
         left_mates  = glob('data/left*'),
         right_mates = glob('data/right*'),
