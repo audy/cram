@@ -58,13 +58,7 @@ def main():
         print_usage()
     # Break
     else:
-        epic_fail('no task, %s' % task)
-        
-     
-def epic_fail(msg):
-    ''' when something goes wrong '''
-    print 'ERROR: %s' % msg
-    quit(-1)
+        ohno('no task, %s' % task)
     
 def print_usage():
     ''' prints usage '''
