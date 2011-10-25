@@ -47,16 +47,22 @@ def okay(s):
 def ohno(s):
     '''
     Status message for when something bad happens
-    Terminates the program with an exit status of 1
     
-    # didnt write test for this because it always fails
+    Also, raises an Exception
+    
+    >>> try:
+    ...     ohno('fail')
+    ... except:
+    ...     pass
+     ✖ fail
     
     '''
     log(s)
-    print '\n ✖ %s' % (s)
-    quit(1)
+    print ' ✖ %s' % (s)
+    
+    raise Exception, s
 
-def run(cmd, generates=False, force=False, silent=False):
+def run(cmd, generates=False, force=False, silent=False, sgi=False):
     ''' Runs a system command unless output exists unless forced.
     Prints a message when it's done'
     
