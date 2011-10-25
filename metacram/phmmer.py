@@ -5,12 +5,12 @@ from helps import *
 def phmmer(**ops):
     ''' Runs phmmer.
     # This fails because of relative directory bull-ish. Gotta fix this.
-    # >>> phmmer(
-    # ... query = '../test/test.fasta',
-    # ... db    = '../test/sample_seed.faa',
-    # ... out   = '../test/test_phmmer.out' )
-    # ✪ running phmmer: ../test/test.fasta vs. ../test/sample_seed.fna
-    # ✓ complete
+    >>> phmmer(
+    ... query = '../test/test.fasta',
+    ... db    = '../test/sample_seed.faa',
+    ... out   = '../test/test_phmmer.out' )
+     ✪ running phmmer: ../test/test.fasta vs. ../test/sample_seed.faa
+     ✓ complete
     '''
     
     # phmmer doesn't like to use as many cpus as you specify
@@ -44,3 +44,5 @@ def phmmer(**ops):
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
+    # quietly remove output
+    run('rm ../test/test_phmmer.out.table', silent=True)
