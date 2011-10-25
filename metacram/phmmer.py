@@ -4,7 +4,11 @@ from helps import *
 
 def phmmer(**ops):
     ''' Runs phmmer.
-    # This fails because of relative directory bull-ish. Gotta fix this.
+
+    # Run phmmer by specifying query, database and output.
+    # output gets .table appended to the filename
+    # eg, ../test/test_phmmer.out.table
+    
     >>> phmmer(
     ... query = '../test/test.fasta',
     ... db    = '../test/sample_seed.faa',
