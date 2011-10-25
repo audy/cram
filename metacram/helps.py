@@ -80,9 +80,14 @@ def run(cmd, generates=False, force=False, silent=False, sgi=False):
      ✓ forced
      ✓ complete
     
-    # raises an error if the exit status isn't 0'
+    # This should raise an exception
     # >>> run('thisisnotacommand')
+    # ✖ thisisnotacommand
+    # Traceback (most recent call last):
+    #     ...
+    # Exception, thisisnotacommand
     
+         
     # remove the log file without logging or printing a message or logging :)
     >>> run('rm log.txt', silent=True)
     
