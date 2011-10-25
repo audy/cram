@@ -57,9 +57,9 @@ def ohno(s):
      ✖ fail
     
     '''
+    
     log(s)
     print ' ✖ %s' % (s)
-    
     raise Exception, s
 
 def run(cmd, generates=False, force=False, silent=False, sgi=False):
