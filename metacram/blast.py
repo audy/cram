@@ -12,9 +12,9 @@ def formatdb(**args):
     
     ohai('running formatdb')
     
-    run(cmd, generates='%s.phr' % database)
+    run(cmd, generates='%s.psq' % database)
 
-def blastp():
+def blastp(**args):
     ''' run BLASTALL (default is blastp, can be overriden with program=) '''
     
     cmd = ' '.join([
@@ -26,7 +26,7 @@ def blastp():
         '-o %s' % args['out'],
         '-v %s' % args.get('alignments', 1),
         '-b %s' % args.get('descriptions', 1),
-        '-a %s' % args.get('threads', 24),
+        '-a %s' % args.get('threads', 1),
         '-m %s' % args.get('format', 1)
     ])
     
