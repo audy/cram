@@ -8,3 +8,4 @@ from phmmer import *
 from prodigal import *
 from smalt import *
 from velvet import *
+from blast import *
