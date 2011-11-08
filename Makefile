@@ -2,9 +2,11 @@ PLATFORM = $(shell uname)
 
 ifeq ($(PLATFORM), Darwin)
 	SMALT = smalt-0.5.7/smalt_MacOSX_i386
+	BLAST = blast-2.2.25-universal-macosx.tar.gz
 endif
 ifeq ($(PLATFORM), Linux)
 	SMALT = smalt-0.5.7/smalt_i686
+	BLAST = blast-2.2.25-x64-linux.tar.gz
 endif
 
 default: ~/cram/db/ ~/cram/bin binaries databases
@@ -18,9 +20,18 @@ default: ~/cram/db/ ~/cram/bin binaries databases
 update:
 	git pull git@heyaudy.com:git/cram.git master
 
-binaries: ~/cram/bin/velvetg ~/cram/bin/prodigal ~/cram/bin/phmmer ~/cram/bin/smalt
+binaries: ~/cram/bin/velvetg ~/cram/bin/prodigal ~/cram/bin/phmmer ~/cram/bin/smalt ~/cram/bin/blastall
 
 databases: ~/cram/db/subsystems2peg ~/cram/db/subsystems2role ~/cram/db/seed.fasta ~/cram/db/taxcollector.fa
+
+~/cram/bin/blastall:
+	curl -O ftp://ftp.ncbi.nih.gov/blast/executables/release/2.2.25/$(BLAST)
+	tar -zxvf $(BLAST) blast-2.2.25/bin/formatdb 
+	tar -zxvf $(BLAST) blast-2.2.25/bin/blastall
+	mv blast-2.2.25/bin/formatdb ~/cram/bin
+	mv blast-2.2.25/bin/blastall ~/cram/bin
+	rm -rf blast-2.2.25
+	rm $(BLAST)
 
 ~/cram/bin/velvetg:
 	curl -O http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.1.05.tgz
