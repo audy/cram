@@ -63,6 +63,8 @@ def smalt_coverage_table(**ops):
     ohai('Generating coverage table from SMALT assembly')
     assembly = ops['assembly']
     phmmer   = ops.get('phmmer', False)
+    blast    = ops.get('blast', False)
+    assert (phmmer or blast)
     out      = ops['out']
 
     # skip if already completed
@@ -80,10 +82,20 @@ def smalt_coverage_table(**ops):
             target = line[5]
             coverage[target] += 1
 
+    # TODO resolve issues with "blast collector and the SEED database"
     # load phmmer output table to get figids from ORF names
     target_to_figid = {}
     if phmmer:
         with open(phmmer) as handle:
+            for line in handle:
+                if line.startswith('#'): continue
+                line = line.strip().split()
+                figid, target = line[0], line[2]
+                assert target not in target_to_figid
+                target_to_figid[target] = figid
+    # load blastp output to get figids from ORF names
+    elif blast:
+        with open(blast) as handle:
             for line in handle:
                 if line.startswith('#'): continue
                 line = line.strip().split()
