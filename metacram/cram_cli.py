@@ -10,9 +10,9 @@ from metacram import *
 # this returns a list of paths to pipelines
 # pipeline name is the full path minus directories and extension
 # PIPELINES = { 'name': 'path', ... }
-
 this_dir, this_filename = os.path.split(__file__)
-PIPELINES = { os.path.basename(i).replace('.py',''): i for i in glob(os.path.join(this_dir, 'pipelines', '*.py')) }
+PIPELINES = { os.path.basename(i).replace('.py', ''): i for i in glob(os.path.join(this_dir, 'pipelines', '*.py'))  }
+del PIPELINES['__init__']
 
 def create_project(script, directory):
     ''' creates a new pipeline in directory given a pipeline module '''
