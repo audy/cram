@@ -3,13 +3,24 @@
 from helps import *
 
 def velvet(**ops):
-    ''' run velvet assembly
-        outdir = 'output_directory',
-        reads = [
-            ('fastq', 'short', 'filename.fastq'),
-            ('fastq', 'paired', 'paired_reads.fastq'), ...
-            ],
-        kmer = 31, # see velvet readme
+    ''' Performs a de novo assembly using Velvet
+    
+    Example:
+    
+    >>> velvet(
+    ... outdir = 'output_directory',
+    ... # reads must be an array of tuples (even if you're only using one file)
+    ... # in the following form:
+    ...
+    ... reads = [
+    ... ('format', 'short long or paired', 'filename.fastq'), ... ]
+    ...
+    ... # example:
+    ... reads = [
+    ... ('fastq', 'paired', 'paired_reads.fastq'), ...
+    ... ],
+    ... kmer = 31, # see velvet readme for why this is important
+    ... )
     '''
     read_ops = ['-%s -%s %s' % r for r in ops['reads'] ]
     
