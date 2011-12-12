@@ -29,20 +29,20 @@ def ohai(s):
     Used for general status messages
     
     >>> ohai('I am a test AMA')
-     ✪ I am a test AMA
+    I am a test AMA
     '''
     log(s)
-    print ' ✪ %s' % (s)
+    print '# %s' % (s)
 
 def okay(s):
     '''
     Status message for when something good happens
     
     >>> okay('I did something cool')
-     ✓ I did something cool
+    > I did something cool
     '''
     log(s)
-    print ' ✓ %s' % (s)
+    print '> %s' % (s)
 
 def ohno(s):
     '''
@@ -54,12 +54,12 @@ def ohno(s):
     ...     ohno('fail')
     ... except:
     ...     pass
-     ✖ fail
+    ! fail
     
     '''
     
     log(s)
-    print ' ✖ %s' % (s)
+    print '! %s' % (s)
     raise Exception, s
 
 def run(cmd, generates=False, force=False, silent=False, sgi=False):
@@ -68,17 +68,17 @@ def run(cmd, generates=False, force=False, silent=False, sgi=False):
     
     # run a command
     >>> run('ls > /dev/null')
-     ✓ ls > /dev/null
+    ls > /dev/null
     
     # run a command unless a file already exists
     >>> run('ls helps.py', generates='helps.py')
-     ✓ skipping
+    skipping
     
     # run a command and force it
     # (same as taking out the generates)
     >>> run('ls helps.py > /dev/null', generates='helps.py', force=True)
-     ✓ forced
-     ✓ complete
+    forced
+    complete
     
     # This should raise an exception
     # >>> run('thisisnotacommand')
