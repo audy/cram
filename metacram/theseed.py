@@ -66,6 +66,7 @@ def prepare_seed(**ops):
                 
                     print >> out, "%s\t%s" % (fig, names)
 
+
 def subsystems_table(**ops):
     ''' converts a coverage table to a subsystems table given
     the figid -> subsystems info
@@ -73,17 +74,6 @@ def subsystems_table(**ops):
     '''
 
     ohai('generating subsystems coverage table')
-    
-    # TODO: I used to take into account CLC's paired-end data and get the
-    # LCA of the two proteins if they didn't match. However, I stopped doing
-    # this for two reasons:
-    #
-    # 1.) It doesn't make sense: If mates in a pair match different references
-    # they are unlikely to match different references with similar functions
-    # (I saw this when looking at the output)
-    #
-    # 2.) CLCs output for paired-data has bugs and is meaningless
-        
     subsnames      = ops['subsnames']
     coverage_table = ops['coverage_table']
     out            = ops['out']
