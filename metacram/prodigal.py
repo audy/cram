@@ -3,7 +3,22 @@
 from helps import *
 
 def prodigal(**ops):
-    ''' run prodigal '''
+    ''' Performs ORF prediction using Prodigal
+    
+    Example: 
+    
+    >>> prodigal(
+    ... input ='input.fasta',
+    ... out = 'out_prefix'
+    ... )
+    
+    This will create three files:
+    
+    out_prefix.gff - GFF file containing annotations.
+    out_prefix.faa - Amino Acid sequences for ORF predictions.
+    out_prefix.fna - Nucleotide sequences for ORF predictions.
+    
+    '''
     
     prodigal = ' '.join([
         '~/cram/bin/prodigal',
