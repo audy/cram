@@ -58,7 +58,25 @@ def smalt_map(**ops):
     
 
 def smalt_coverage_table(**ops):
-    ''' generate coverage table from smalt cigar output '''
+    ''' generate coverage table from smalt cigar output
+    
+    >>> smalt_coverage_table(
+    ... # your reference assembly from SMALT
+    ... assembly = 'assembly.cigar',
+    ...
+    ... # you can use phmmer:
+    ... phmmer = 'phmmer_table.txt',
+    ...
+    ... # or blast:
+    ... blast = 'blast_table.txt'
+    ... # (but not both)
+    ...
+    ... # output is list of ORF names
+    ... # (whatever is in header) and their coverage
+    ... out = 'output.txt'
+    ... )
+    
+    '''
     
     ohai('Generating coverage table from SMALT assembly')
     assembly = ops['assembly']
