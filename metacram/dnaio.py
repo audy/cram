@@ -179,7 +179,12 @@ class Record:
             
     @property
     def qseq(self):
-        ''' return qseq formatted string '''
+        ''' Return a qseq formatted string
+        
+        NOT IMPLEMENTED
+        do not use.
+        
+        '''
         raise Exception, 'qseq not implemented!'
     
     def __str__(self):
