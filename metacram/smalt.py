@@ -93,14 +93,19 @@ def smalt_coverage_table(**ops):
                 figid, target = line[0], line[2]
                 assert target not in target_to_figid
                 target_to_figid[target] = figid
+                
     # load blastp output to get figids from ORF names
     elif blast:
         with open(blast) as handle:
             for line in handle:
                 if line.startswith('#'): continue
-                line = line.strip().split()
-                figid, target = line[0], line[2]
-                assert target not in target_to_figid
+                line = line.split()
+                target, figid = line[0], line[1].split(';')[4]
+                
+                # this will happen...
+                if target in target_to_figid:
+                    assert figid == target_to_figid[target]
+                
                 target_to_figid[target] = figid
 
     # print coverage table
