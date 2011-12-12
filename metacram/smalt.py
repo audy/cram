@@ -3,6 +3,24 @@
 
 from helps import *
 import os
+import sys
+
+def make_sub_names(s):
+    ''' Creates list of subsystem combinations
+    
+    >>> make_sub_names('A;B;C;D')
+    ['A', 'A;B', 'A;B;C', 'A;B;C;D']
+    
+     '''
+    if type(s) == str:
+        subsystems = s.split(';')
+    elif type(s) in (list, tuple):
+        subsystems = s
+    
+    a = []
+    for i in range(len(subsystems)+1)[1:]:
+        a.append(';'.join(subsystems[0:i]))
+    return a
 
 def smalt_index(**ops):
     ''' Build reference index of target sequences
@@ -85,32 +103,34 @@ def smalt_coverage_table(**ops):
     
     '''
     
-    ohai('Generating coverage table from SMALT assembly')
+    ohai('generating coverage table from SMALT assembly')
     assembly = ops['assembly']
     phmmer   = ops.get('phmmer', False)
     blast    = ops.get('blast', False)
+    seed     = ops['seed']
     assert (phmmer or blast)
     out      = ops['out']
 
     # skip if already completed
-    if os.path.exists(out):
-        okay('skipping')
-        return
+    # if os.path.exists(out):
+    #     okay('skipping')
+    #     return
 
     from collections import defaultdict
     coverage = defaultdict(int)
+    combined_coverage = defaultdict(int)
    
-    # measure orf coverage
+    # measure orf coverage from SMALT assembly
     with open(assembly) as handle:
         for line in handle:
             line = line.split()
             target = line[5]
             coverage[target] += 1
 
-    # TODO resolve issues with "blast collector and the SEED database"
     # load phmmer output table to get figids from ORF names
     target_to_figid = {}
     if phmmer:
+        raise Exception, "haven't fixed phmmer but this should be easy."
         with open(phmmer) as handle:
             for line in handle:
                 if line.startswith('#'): continue
@@ -119,29 +139,26 @@ def smalt_coverage_table(**ops):
                 assert target not in target_to_figid
                 target_to_figid[target] = figid
                 
-    # load blastp output to get figids from ORF names
+    # load blastp output to get subsystem names from ORF names
+    # also, get combinations of subsystem names, count coverage for
+    # all of them (I'm having a hard time explaining what this does. Just
+    # see make_sub_names())
     elif blast:
         with open(blast) as handle:
             for line in handle:
                 if line.startswith('#'): continue
                 line = line.split()
-                target, figid = line[0], line[1].split(';')[4]
+                target, names = line[0], line[1].split(';')[0:-1]
                 
-                # this will happen...
-                if target in target_to_figid:
-                    assert figid == target_to_figid[target]
-                
-                target_to_figid[target] = figid
-
-    # print coverage table
+                for name in make_sub_names(names):
+                    combined_coverage[name] += coverage[target]
+    
+    # print combined coverage table
     with open(out, 'w') as handle:
-        for target in coverage:
-            # Get figid from target (ORF id)
-            # Keep ORF name if unidentified.
-            figid = target_to_figid.get(target, target)
-            reads = coverage.get(target, 0)
-            print >> handle, "%s\t%s" % (figid, reads)
-
+        for name in combined_coverage:
+            count = combined_coverage[name]
+            print >> handle, "%s\t%s" % (name, count)
+        
 
 if __name__ == '__main__':
     # clean up

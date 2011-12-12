@@ -2,7 +2,11 @@ from dnaio import *
 from helps import *
 
 def prepare_seed(**ops):
-    ''' Create table of seed_id -> subsystems for use later when creating
+    '''
+    This is to be made obsolete by an executable that prepares the seed
+    database by altering the headers and places it in ~/cram/db
+    
+    Create table of seed_id -> subsystems for use later when creating
     subsystem coverage tables with make_subsystem_table()
     
     >>> prepare_seed(
@@ -118,11 +122,11 @@ def subsystems_table(**ops):
     But also aggregate broader subsystems and give their cumulative coverage
     
     Sub1;Sub2;Sub3;Sub4 500
-    Sub1;Sub2;Sub3  500
+    Sub1;Sub2;Sub3      500
     Sub1;Sub2;SubX;SubY 400
-    Sub1;Sub2;SubX  400
-    Sub1;Sub2   900
-    Sub1;   900
+    Sub1;Sub2;SubX      400
+    Sub1;Sub2           900
+    Sub1;               900
     
     This is so that metabolic potential can be compared across samples at
     different degrees of specificity.
@@ -130,28 +134,28 @@ def subsystems_table(**ops):
     '''
     
     ohai('generating subsystems coverage table')
-    subsnames      = ops['subsnames']
+    seed_db        = ops['seed_db']
     coverage_table = ops['coverage_table']
     out            = ops['out']
     
     ohai('creating subsystems table')
-    if os.path.exists(out):
-        okay('skipping')
-        return
+    # if os.path.exists(out):
+    #     okay('skipping')
+    #     return
     
-    # load subsystem names
-    with open(subsnames) as handle:
-        fig_to_name = {}
-        for line in handle:
-            if line.startswith('#'): continue
-            
-            figid, name = line.strip().split('\t')
+    # load subsystem names from seed_tc.fasta
+    fig_to_name = {}
+    with Dna(open(seed_db)) as records:
+        for record in records:
+            names = record.header.split(';')
+            figid = names[-1]
+            names = names[0:-1]
             
             # what if this happens?
             if figid in fig_to_name:
-                    assert name == fig_to_name[figid]
+                assert names == fig_to_name[figid]
             
-            fig_to_name[figid] = name
+            fig_to_name[figid] = names
     
     # the output table should look like this:
     # sys_a,\t10
