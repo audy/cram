@@ -5,9 +5,11 @@ from helps import *
 import os
 
 def smalt_index(**ops):
-    ''' build reference index
+    ''' Build reference index of target sequences
+    Required by SMALT prior to reference assembly.
     
-    # create an index from a set of reference sequences
+    Example: create an index from a set of reference sequences
+    
     >>> smalt_index(
     ... reference = '../test/taxcollector.fa',
     ... name      = '../test/tc_index')
@@ -21,8 +23,11 @@ def smalt_index(**ops):
     run(cmd, generates='%s.smi' % name)
 
 def smalt_map(**ops):
-    ''' reference assemble using smalt
-     
+    ''' Perform reference assembly using SMALT
+    Requires index of target sequences built by smalt_index()
+    
+    Example:
+    
      >>> smalt_map(
      ... query     = '../test/test.fasta',
      ... reference = '../test/tc_index',
@@ -58,7 +63,9 @@ def smalt_map(**ops):
     
 
 def smalt_coverage_table(**ops):
-    ''' generate coverage table from smalt cigar output
+    ''' Takes the cigar-format output of SMALT and generates a coverage table.
+    
+    Example:
     
     >>> smalt_coverage_table(
     ... # your reference assembly from SMALT
