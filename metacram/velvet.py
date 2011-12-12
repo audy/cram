@@ -21,6 +21,8 @@ def velvet(**ops):
     ... ],
     ... kmer = 31, # see velvet readme for why this is important
     ... )
+    
+    
     '''
     read_ops = ['-%s -%s %s' % r for r in ops['reads'] ]
     
