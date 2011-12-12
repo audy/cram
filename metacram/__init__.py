@@ -9,3 +9,4 @@ from prodigal import *
 from smalt import *
 from velvet import *
 from blast import *
+from theseed import *
