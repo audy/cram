@@ -1,5 +1,7 @@
 # these functions are for dealing with CLC Assembly Cell and its output
 
+# THIS IS NO LONGER SUPPORTED. JUST HERE FOR POSTERITY!! ~ Austin
+
 # clc_filter
 # assembly_table
 # reference_assemble_clc
