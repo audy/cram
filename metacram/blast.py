@@ -27,7 +27,7 @@ def blastp(**args):
         '-v %s' % args.get('alignments', 1),
         '-b %s' % args.get('descriptions', 1),
         '-a %s' % args.get('threads', 1),
-        '-m %s' % args.get('format', 1)
+        '-m %s' % args.get('format', 8)
     ])
     
     ohai('running blastp')
