@@ -2,7 +2,27 @@ from dnaio import *
 from helps import *
 
 def trim_pairs(**ops):
-    ''' trim paired reads, output interleaved fastq and singletons files '''
+    ''' Performs quality trimming of paired-end sequences generating interleaved
+    (paired) and singletons fasta files.
+    
+    Example
+    
+    >>> trim_pairs(
+    ... # Specify file format of reads (see DnaIO for options).
+    ... input_format = 'qseq', # default
+    # ... output_format = 'fastq', # default # NOT IMPLEMENTED
+    ... out_right = 'right_singletons.fastq',
+    ... out_left = 'left_singletons.fastq',
+    ... out_trimmed = 'paired_trimmed.fastq',
+    ... # minimum length cutoff for read survival
+    ... cutoff = 70, # default
+    ... )
+    
+    The reason that qseq is the default format for input and fastq is the
+    default format for output is that my Illumina machine generates qseq
+    files but I need fastq files to perform de novo assembly using Velvet.
+    
+    '''
     
     ohai('trimming pairs')
     for f in [ops['out_left'], ops['out_right'], ops['out']]:
@@ -11,6 +31,9 @@ def trim_pairs(**ops):
             return
     
     input_format = ops.get('input_format', 'qseq')
+    
+    # TODO implement this
+    # out_format  = ops.get('output_format', 'fastq')
     
     out_left    = open(ops['out_left'], 'w')
     out_right   = open(ops['out_right'], 'w')
