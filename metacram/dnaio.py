@@ -23,6 +23,7 @@ class Dna:
     5
     
     '''
+    
     def __init__(self, handle, type='fasta'):
         self.handle = handle
         self.type = type
