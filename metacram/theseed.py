@@ -68,11 +68,67 @@ def prepare_seed(**ops):
 
 
 def subsystems_table(**ops):
-    ''' converts a coverage table to a subsystems table given
+    ''' Converts an ORFs coverage table to a subsystems table given
     the figid -> subsystems info
     
+    The ORFs coverage table contains the ORF annotation (or ORF name if not
+    found in the SEED database) and the number of reads that mapped to it
+    by the reference assembly (SMALT).
+    
+    Example:
+    
+    fig|296591.12.peg.5415  15
+    NODE_89_length_964_cov_3.000000_85_3    1
+    _Delta-9_fatty_acid_desaturase_(EC_1.14.19.1)_[SS]_(GI:91791132)        3
+    
+    This table is converted to a table containing the annotation of the
+    fig ID given by the SEED database using this function.
+    
+    Example:
+    
+    >>> subsystems_table(
+    ... seed_db = 'tc_seed.fasta',
+    ... coverage_table = '',
+    ... out = 'subsystems_table.txt'
+    ... )
+    
+    The SEED database has to have the full annotation in the headers. This is
+    not provided by the original seed database but can be created using
+    SeedCollector.
+    
+    The headers look like this:
+    
+    >Carbohydrates;Xylose_utilization;Monosaccharides;Beta-xylosidase_(EC_3.2.1.37);fig|100226.1.peg.99
+    
+    The subsystems are in order from broadest to most-specific, separated by
+    semicolons and followed by the fig ID:
+    
+    >Sub1;Sub2;Sub3;Sub4;FIG_ID
+    
+    If subsystems are missing, they are to be replaced by 'NA':
+    
+    >NA;NA;NA;unknown_function_(GI:334129254);fig|1000565.3.peg.15
+    
+    The output of this table will not only contain the number of reads for
+    each subsystem:
+    
+    Sub1;Sub2;Sub3;Sub4 500
+    Sub1;Sub2;SubX;SubY 400
+    
+    But also aggregate broader subsystems and give their cumulative coverage
+    
+    Sub1;Sub2;Sub3;Sub4 500
+    Sub1;Sub2;Sub3  500
+    Sub1;Sub2;SubX;SubY 400
+    Sub1;Sub2;SubX  400
+    Sub1;Sub2   900
+    Sub1;   900
+    
+    This is so that metabolic potential can be compared across samples at
+    different degrees of specificity.
+    
     '''
-
+    
     ohai('generating subsystems coverage table')
     subsnames      = ops['subsnames']
     coverage_table = ops['coverage_table']
