@@ -39,14 +39,30 @@ class Dna:
         pass
         
     def __exit__(self, *args):
+        ''' This is here so that Dnai() can be used in a with statement
+        
+        Example
+        
+        with Dna(open('kitten_metagenome.fastq'), type='fastq') as records:
+            for record in records:
+                print record
+                
+        This closes the file when the with statement exits.
+        
+        '''
         self.handle.close()
         
     def close(self):
-        ''' close the handle '''
+        ''' Explicitly close the file handle '''
         self.handle.close()
         
     def __iter__(self):
-        ''' iterate through file based on type '''
+        ''' The deliverator of Record() objects.
+        
+        uses yield so that the entire file isn't loaded into memory
+        (hence the memory-efficiency)
+        
+         '''
         
         # FASTA FILES
         if self.type == 'fasta':
