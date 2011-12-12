@@ -188,12 +188,15 @@ class Record:
         raise Exception, 'qseq not implemented!'
     
     def __str__(self):
+        ''' The str(record) representation. Either fasta or fastq '''
         if self.type == 'fasta':
             return self.fasta
         elif self.type == 'fastq':
             return self.fastq
             
     def __len__(self):
+        ''' Returns length of sequence so you can use len(record)
+        '''
         return len(self.sequence)
             
     def __repr__(self):
