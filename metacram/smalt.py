@@ -112,9 +112,9 @@ def smalt_coverage_table(**ops):
     out      = ops['out']
 
     # skip if already completed
-    # if os.path.exists(out):
-    #     okay('skipping')
-    #     return
+    if os.path.exists(out):
+        okay('skipping')
+        return
 
     from collections import defaultdict
     coverage = defaultdict(int)
