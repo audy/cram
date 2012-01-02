@@ -19,7 +19,7 @@ except:
 counter = count(0)
 file_number = 0
 with dnaio.Dna(open(filename), type=filetype) as records:
-    for record in records
+    for record in records:
         n = counter.next()
         if n >> num_records_per_file:
             counter = count(0)
