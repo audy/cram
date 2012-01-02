@@ -26,7 +26,7 @@ def blastp(**args):
         '-o %s' % args['out'],
         '-v %s' % args.get('alignments', 1),
         '-b %s' % args.get('descriptions', 1),
-        '-a %s' % args.get('threads', 1),
+        '-a %s' % args.get('threads', 24),
         '-m %s' % args.get('format', 8)
     ])
     
