@@ -1,27 +1,11 @@
 # CRAM
 
-Comparative Rapid Annotation of Metagenomes
+CRAM is a tool developed to analyze data produced from shotgun metagenome sequencing. CRAM was created for people who are familiar with UNIX and command-line interfaces and enables scientists to modify their analysis approach specific to their experiment. It was created to provide an alternative to one-size-fits-all approaches to metagenome annotation.
 
-CRAM is a framework for building pipelines for metagenomic annotation.
+The default pipeline consists of an assemble, annotate and quantify approach to metagenome analysis. The creation of quantitative data allows for comparison between samples across other variables such as time and space. If this does not suit you, you can easily craft your own approach.
 
-Pipelines for Illumina and 454 are included.
+To learn how to install and use CRAM, visit the [wiki](http://github.com/audy/cram/wiki).
 
-CRAM is licensed under the GNU GPL v3 Open Source license.
+## LICENSE
 
-Austin G. Davis-Richardson
-
-## Overview
-
-The pipeline follow these steps.
-
-- Quality Trimming
-- _De Novo_ assembly
-- Open Reading Frame prediction
-- ORF annotation via the SEED database and PHMMER
-- ORF coverage estimation by reference assembly
-- Subsystem table generation
-- 16S rRNA classification using the Ribosomal Database Project 16S rRNA database and TaxCollector.
-
-## Installation & Usage
-
-Please refer to the [wiki](https://github.com/audy/cram/wiki)
+TODO
