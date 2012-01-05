@@ -20,7 +20,6 @@ def run(cmd, generates=False, force=False, silent=False, sgi=False):
     
     # This should raise an exception
     # >>> run('thisisnotacommand')
-    # ✖ thisisnotacommand
     # Traceback (most recent call last):
     #     ...
     # Exception, thisisnotacommand
