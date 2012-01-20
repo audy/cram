@@ -10,4 +10,4 @@ To learn how to install and use CRAM, visit the [wiki](http://github.com/audy/cr
 
 ## LICENSE
 
-TODO
+BSD (see LICENSE.txt)
