@@ -1,6 +1,7 @@
 # For using Velvet de-novo assembler
 
-from helps import *
+from runner import *
+from logger import *
 
 def velvet(**ops):
     ''' Performs a de novo assembly using Velvet

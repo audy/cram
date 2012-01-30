@@ -1,7 +1,8 @@
 from pipe import *
 from dnaio import *
 from trim import *
-from helps import *
+from runner import *
+from logger import *
 
 from clc import *
 from phmmer import *

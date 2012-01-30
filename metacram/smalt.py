@@ -1,7 +1,8 @@
 # For using SMALT reference assembler
 # encoding: utf-8
 
-from helps import *
+from runner import *
+from logger import *
 import os
 import sys
 

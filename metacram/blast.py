@@ -1,4 +1,5 @@
-from helps import *
+from runner import *
+from logger import *
 
 def formatdb(**args):
     ''' run NCBI formatdb '''

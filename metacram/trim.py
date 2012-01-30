@@ -1,5 +1,6 @@
 from dnaio import *
-from helps import *
+from runner import *
+from logger import *
 
 def trim_pairs(**ops):
     ''' Performs quality trimming of paired-end sequences generating interleaved

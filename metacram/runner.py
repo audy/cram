@@ -1,5 +1,5 @@
 import os
-
+from logger import *
 def run(cmd, generates=False, force=False, silent=False, sgi=False):
     ''' Runs a system command unless output exists unless forced.
     Prints a message when it's done'

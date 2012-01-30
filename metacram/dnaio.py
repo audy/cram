@@ -1,6 +1,9 @@
 # Classes for dealing with different sequence file formats
 # FASTQ, FASTA, QSEQ
 
+from runner import *
+from logger import *
+
 class Dna:
     ''' A memory-efficient fasta/q/ file iterator
     
