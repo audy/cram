@@ -95,21 +95,13 @@ prodigal(
 ## IDENTIFY ORFS WITH BLASTP
 # misbehaving ! just assume someone ran it already.
 # formatdb(database = db['tc_seed'])
-
-# split ORFs files
-run("mkdir -p %s" % d("orfs/split"))
-run("python split_fasta.py %s 1000 %s" % (d("orfs/predicted_orfs.faa"), d("orfs/split")))
-
-for i in glob(d("orfs/split/*")):
-  blastp( 
-      query = i,
-      database =db['tc_seed'],
-      out = d('anno/%s.fraction.txt' % os.path.basename(i)),
-      evalue = 0.00001,
-      threads = 24,
-  )
-
-run("cat %s > %s" % (d("anno/*.fraction.txt"), d("anno/blast.txt")))
+blastp( 
+  query = d("orfs/predicted_orfs.faa"),
+  database =db['tc_seed'],
+  out = d('anno/blast.txt' % os.path.basename(i)),
+  evalue = 0.00001,
+  threads = 24,
+)
 
 
 ## GET ORF COVERAGE using CLC
