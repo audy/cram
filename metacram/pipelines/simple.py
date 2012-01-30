@@ -94,7 +94,7 @@ prodigal(
 
 ## IDENTIFY ORFS WITH BLASTP
 # misbehaving ! just assume someone ran it already.
-# formatdb(database = db['tc_seed'])
+formatdb(database = db['tc_seed'])
 blastp( 
   query = d("orfs/predicted_orfs.faa"),
   database =db['tc_seed'],
