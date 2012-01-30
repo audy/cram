@@ -1,6 +1,7 @@
 # encoding: utf-8
 
-from helps import *
+from runner import *
+from logger import *
 
 def phmmer(**ops):
     ''' Runs phmmer.

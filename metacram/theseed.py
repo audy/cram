@@ -1,5 +1,6 @@
 from dnaio import *
-from helps import *
+from runner import *
+from logger import *
 
 def prepare_seed(**ops):
     '''

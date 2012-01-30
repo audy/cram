@@ -1,6 +1,7 @@
 # For using Prodigal Gene Prediction
 
-from helps import *
+from runner import *
+from logger import *
 
 def prodigal(**ops):
     ''' Performs ORF prediction using Prodigal

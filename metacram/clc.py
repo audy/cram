@@ -9,7 +9,8 @@
 # make_coverage_table
 
 import re
-from helps import *
+from runner import *
+from logger import *
 
 def clc_filter(**ops):
     ''' filter clc output generating more clc output
