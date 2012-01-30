@@ -36,7 +36,7 @@ databases: ~/cram/db/tc_seed.fasta ~/cram/db/taxcollector.fa
 ~/cram/bin/velvetg:
 	curl -O http://www.ebi.ac.uk/~zerbino/velvet/velvet_1.1.05.tgz
 	tar -zxvf velvet_1.1.05.tgz
-	make -C velvet_1.1.05 velveth velvetg MAXKMERLENGTH=71 OPENMP=1 LONGSEQUENCES=1
+	make -C velvet_1.1.05 velveth velvetg MAXKMERLENGTH=71 LONGSEQUENCES=1
 	mv velvet_1.1.05/velvetg ~/cram/bin/
 	mv velvet_1.1.05/velveth ~/cram/bin/
 	rm -rf velvet_1.1.05*
