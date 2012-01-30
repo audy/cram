@@ -70,5 +70,5 @@ databases: ~/cram/db/subsystems2peg ~/cram/db/subsystems2role ~/cram/db/seed.fas
 ~/cram/db/taxcollector.fa:
 	curl http://microgator.org/taxcollector.fa.gz | gunzip > ~/cram/db/taxcollector.fa
 
-~/cram/db/seed.fasta:
-	curl ftp://ftp.theseed.org/genomes/SEED/SEED.fasta.gz | gunzip > ~/cram/db/seed.fasta
+~/cram/db/seed_tc.fasta:
+	curl https://s3.amazonaws.com/genome-sequencing/babaco/tc_seed.fasta.gz | gunzip > ~/cram/db/seed.fasta
