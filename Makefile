@@ -58,4 +58,4 @@ databases: ~/cram/db/tc_seed.fasta ~/cram/db/taxcollector.fa
 	curl http://microgator.org/taxcollector.fa.gz | gunzip > ~/cram/db/taxcollector.fa
 
 ~/cram/db/tc_seed.fasta:
-	curl https://s3.amazonaws.com/genome-sequencing/babaco/tc_seed.fasta.gz | gunzip > ~/cram/db/seed.fasta
+	curl https://s3.amazonaws.com/genome-sequencing/babaco/tc_seed.fasta.gz | gunzip > ~/cram/db/tc_seed.fasta
