@@ -16,7 +16,7 @@ def prepare_seed(**ops):
     ...    role = '../test/subsystems2role',
     ...    out  = '/dev/null'
     ... )
-     ✪ preparing SEED subsystems database
+    preparing SEED subsystems database
     '''
     
     ohai('preparing SEED subsystems database')
