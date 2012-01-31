@@ -98,7 +98,7 @@ formatdb(database = db['tc_seed'])
 blastp( 
   query = d("orfs/predicted_orfs.faa"),
   database =db['tc_seed'],
-  out = d('anno/blast.txt' % os.path.basename(i)),
+  out = d('anno/blast.txt'),
   evalue = 0.00001,
   threads = 24,
 )
