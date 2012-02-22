@@ -36,9 +36,19 @@ def trim_pairs(**ops):
     # TODO implement this
     # out_format  = ops.get('output_format', 'fastq')
     
-    out_left    = open(ops['out_left'], 'w')
-    out_right   = open(ops['out_right'], 'w')
-    out_trimmed = open(ops['out'], 'w')
+    # check if input format is compressed
+    # replace default open() function
+    o = open
+    if input_format.endswith('gz'):
+        from gzip import open as o
+    elif input_format.endswith('bz2'):
+        from bzip import open as o
+    elif input_format.endswith('zip'):
+        from zipfile import open as o
+    
+    out_left    = o(ops['out_left'], 'w')
+    out_right   = o(ops['out_right'], 'w')
+    out_trimmed = o(ops['out'], 'w')
     cutoff      = int(ops['cutoff'])
     
     from itertools import izip
