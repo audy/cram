@@ -67,18 +67,6 @@ class Dna:
         
          '''
         
-        # Check if files are compressed
-        # If so, replace default open() and close()
-        # with gzip.open(), gzip.close()
-        if self.type.endswith('gz'):
-            from gzip import open, close
-        # same for bz2
-        elif self.type.endswith('bz2'):
-            from bz2 import open, close
-        # and zipfile
-        elif self.type.endswith('zip'):
-            from zipfile import open, close
-        
         # FASTA FILES
         if self.type.startswith('fasta'):
             header, sequence = False, False
@@ -113,7 +101,7 @@ class Dna:
                     yield Record(header, sequence, quality)
                     
         # QSEQ FILES (Illumina)
-        elif self.type == 'qseq':
+        elif self.type.startswith('qseq'):
             for line in self.handle:
                 line = line.strip().split()
                 header = ':'.join(line[:7])
