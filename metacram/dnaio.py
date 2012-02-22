@@ -30,9 +30,9 @@ class Dna:
     def __init__(self, handle, type='fasta'):
         self.handle = handle
         self.type = type
-        if self.type == 'fastq':
+        if self.type.startswith('fastq'):
             self.offset = 33
-        elif self.type == 'qseq':
+        elif self.type.startswith('qseq'):
             self.offset = 64
         else:
             self.offset = None
@@ -67,8 +67,20 @@ class Dna:
         
          '''
         
+        # Check if files are compressed
+        # If so, replace default open() and close()
+        # with gzip.open(), gzip.close()
+        if self.type.endswith('gz'):
+            from gzip import open, close
+        # same for bz2
+        elif self.type.endswith('bz2'):
+            from bz2 import open, close
+        # and zipfile
+        elif self.type.endswith('zip'):
+            from zipfile import open, close
+        
         # FASTA FILES
-        if self.type == 'fasta':
+        if self.type.startswith('fasta'):
             header, sequence = False, False
             for line in self.handle:
                 line = line.strip()
@@ -84,7 +96,7 @@ class Dna:
             yield Record(header, ''.join(sequence))
             
         # FASTQ FILES
-        elif self.type == 'fastq':
+        elif self.type.startswith('fastq'):
             from itertools import cycle
             
             c = cycle([0, 1, 2, 3])
