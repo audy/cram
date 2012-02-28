@@ -53,6 +53,7 @@ def smalt_map(**ops):
      ... identity  = 0.8,
      ... out       = '../test/smalt_sample_out.txt',
      ... threads   = 2, # default/max = 8
+     ... l         = le or mp or False (paired end type, see smalt documentation)
      ... )
       ✓ complete
     '''
@@ -62,6 +63,7 @@ def smalt_map(**ops):
     identity  = ops['identity']
     out       = ops['out']
     threads   = ops.get('threads', 8)
+    l         = opts.get('l', False)
     
     if type(query) is str:
         query_ops = '-q %s' % ops['query']
@@ -69,14 +71,23 @@ def smalt_map(**ops):
         raise Exception, 'currently SMALT can only deal with one reference at a time'
     
     # reference assemble creating .cigar files
-    cmd = ' '.join([
+    cmd = [
         '~/cram/bin/smalt map',
         '-n %s' % threads,
         '-y %s' % identity,
         '-o %s' % out,
-        '%s' % reference,
-        '%s' % query,
-        '> /dev/null'])
+    ]
+    
+    # for paired-end assemblies
+    if l: cmd << '-l %s' % l
+    
+    cmd << '%s' % reference
+    cmd << '%s' % query
+    
+    # be quiet (really, this should get logged somewhere)
+    cmd << '> /dev/null'
+    
+    cmd = ' '.join(cmd)
     
     run(cmd, generates=out)
     
