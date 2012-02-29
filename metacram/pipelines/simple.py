@@ -17,9 +17,6 @@ read_format = args.get('read_format', 'fastq')
 db = {
     'tc_seed': '~/cram/db/tc_seed.fasta',
     'taxcollector': '~/cram/db/taxcollector.fa',
-    'subsystems2peg': '~/cram/db/subsystems2peg',
-    'subsystems2role': '~/cram/db/subsystems2role',
-    'seed_ss': '~/cram/db/seed_ss.txt',
 }
 
 
