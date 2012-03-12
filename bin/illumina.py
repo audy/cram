@@ -7,31 +7,34 @@ from glob import glob
 
 from metacram import *
 
-''' the actual pipeline '''
-left_mates = glob('data/left*')[0]
-right_mates = glob('data/right*')[0]
+target_directory = sys.argv[1]
 out = 'out'
-read_format = 'qseq' # or fastq or fasta
-alignment = 'phmmer' # or blast
+d = get_outdir(os.path.join(target_directory, out))
+
+ohai('output: %s' % d(''))
+
+ohai('ILLUMINA PIPELINE: %s' % target_directory)
+
+left_mates = glob('data/left*')
+right_mates = glob('data/right*')
+
+for i, j in zip(left_mates, right_mates):
+    ohai('%s + %s' % (i, j))
+
+read_format = 'qseq' # fastq, fasta, qseq
+alignment = 'blast' # blast, phmmer
 kmer_lengths = [21, 31, 51, 71] # for assembling
 final_kmer_length = 31
 
 # location of databases
 db = {
-    'seed': '~/cram/db/seed.fasta',
+    'tc_seed': '~/cram/db/tc_seed.fasta',
     'taxcollector': '~/cram/db/taxcollector.fa',
-    'subsystems2peg': '~/cram/db/subsystems2peg',
-    'subsystems2role': '~/cram/db/subsystems2role',
-    'seed_ss': '~/cram/db/seed_ss.txt',
 }
 
 # expand tilde to home directory
 for k in db:
     db[k] = os.path.expanduser(db[k])
-
-# Creates a simple function to prepend the output directory
-# to the directory/filename you specify
-d = get_outdir(out)
 
 # Define how to filter taxonomic matches
 phylo = {
@@ -43,7 +46,7 @@ ohai('running pipeline!')
 
 ## MAKE DIRECTORIES
 [ run('mkdir -p %s' % i) for i in [
-    out,
+    d(''),
     d('orfs'),
     d('anno'),
     d('refs'),
@@ -69,7 +72,7 @@ for k in kmer_lengths:
             ('fastq', 'short', d('trimmed/singletons_left.fastq')),
             ('fastq', 'short', d('trimmed/singletons_right.fastq'))
         ],
-        outdir = 'contigs_%s' % k,
+        outdir = d('contigs_%s' % k),
         k      = k
     )
 
@@ -94,52 +97,53 @@ split_fasta(
 )
 
 ## IDENTIFY ORFS WITH PHMMER or BLAST
-if alignment == 'phmmer':
-    phmmer(
-        query = d('orfs/predicted_orfs.faa'),
-        db    = db['seed'],
-        out   = d('anno/proteins.txt')
-    )
-elif alignment == 'blast':
-    blastp(
-        query = d('orfs/predicted_orfs.faa'),
-        db    = db['seed'],
-        out   = d('anno/proteins.txt')
-    )
-    
-# flatten phmmer file (we only need top hit)
-run('misc/flatten_phmmer.py out/anno/proteins.txt.table > out/anno/proteins_flat.txt',
-    generates='out/anno/proteins_flat.txt')
+for q in glob(d('orfs/split/*.faa')):
+    if alignment == 'phmmer':
+        phmmer(
+            query = q,
+            db    = db['tc_seed'],
+            out   = d('anno/proteins.%s.txt' % q)
+        )
+    elif alignment == 'blast':
+        blastp(
+            query = q,
+            db    = db['tc_seed'],
+            out   = d('anno/proteins.%s.txt' % q)
+        )
 
 ## GET ORF COVERAGE using SMALT
 
-# create table connecting seed and subsystems
-# seed_sequence_number -> system;subsystem;subsubsystem;enzyme
-# use this later to make functions tables
-# index reference database
+# reference assemble trimmed reads against ORFs
+left, right, paired = d('trimmed/singletons_left.fastq'), d('trimmed/singletons_right.fastq'), d('trimmed/reads_trimmed.fastq')
+
+# index predicted orfs
+
 smalt_index(
     reference = d('orfs/predicted_orfs.fna'),
-    name      = d('orfs/predicted_orfs')
+    name      = d('orfs/predicted_orfs') # prefix*
 )
 
-# reference assemble
-queries = glob('out/*.fastq') 
-for q in queries:
-    ohai('smalt mapping %s' % q)
+for r in glob(d('trimmed/*.fastq')):
+    ohai('smalt mapping %s' % r)
     smalt_map(
-        query     = q,
+        query     = r,
         reference = d('orfs/predicted_orfs'),
-        out       = d('refs/%s_vs_orfs.cigar' % os.path.basename(q)),
+        out       = d('refs/%s_vs_orfs.cigar' % os.path.basename(r)),
         identity  = 0.80
     )
 
-    ohai('coverage table %s' % q)
-    # make coverage table
-    smalt_coverage_table(
-        assembly = d('refs/%s_vs_orfs.cigar' % os.path.basename(q)),
-        phmmer   = d('anno/proteins_flat.txt'),
-        out      = d('tables/%s_seed_coverage.txt' % os.path.basename(q))
-    )
+ohai('combining SMALT tables')
+run('cat %s > %s' % (d('refs/*.cigar'), d('refs/combined.txt')), generates=d('refs/combined.txt'))
+
+quit()
+
+smalt_coverage_table(
+    assembly = d('refs/combined.txt'),
+    out      = d('tables/%s_seed_coverage.txt' % os.path.basename(o))
+)
+
+# concatenate coverage tables
+
 
 # concatenate assembly coverage tables
 ohai('concatenating assembly coverage tables')
@@ -150,13 +154,6 @@ coverage_tables = glob(d('tables/*_seed_coverage.txt'))
 run('cat %s > %s' % \
     (' '.join(coverage_tables), d('tables/SMALT_orfs_coverage.txt')),
     generates=d('tables/SMALT_orfs_coverage.txt')
-)
-
-prepare_seed(
-    seed = db['seed'],
-    peg  = db['subsystems2peg'],
-    role = db['subsystems2role'],
-    out  = db['seed_ss']
 )
 
 subsystems_table(
