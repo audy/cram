@@ -194,3 +194,10 @@ def subsystems_table(**ops):
         for s in sorted(merged_counts, key = lambda x: merged_counts[x], reverse=True):
             print >> handle, "%s\t%s" % (s, merged_counts[s])
 
+if __name__ == '__main__':
+    import sys
+    prepare_seed(
+        seed = sys.argv[1],
+        peg  = sys.argv[2],
+        role = sys.argv[3],
+    )
