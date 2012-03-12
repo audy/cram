@@ -21,7 +21,7 @@ def blastp(**args):
     cmd = ' '.join([
         '~/cram/bin/blastall',
         '-p %s' % args.get('program', 'blastp'),
-        '-d %s' % args['database'],
+        '-d %s' % args['db'],
         '-i %s' % args['query'],
         '-e %s' % args.get('evalue', 10),
         '-o %s' % args['out'],
