@@ -22,7 +22,7 @@ update:
 
 binaries: ~/cram/bin/velvetg ~/cram/bin/prodigal ~/cram/bin/phmmer ~/cram/bin/smalt ~/cram/bin/blastall
 
-databases: ~/cram/db/subsystems2peg ~/cram/db/subsystems2role ~/cram/db/seed.fasta ~/cram/db/taxcollector.fa
+databases: ~/cram/db/tc_seed.fasta ~/cram/db/taxcollector.fa
 
 ~/cram/bin/blastall:
 	curl -O ftp://ftp.ncbi.nih.gov/blast/executables/release/2.2.25/$(BLAST)
@@ -72,3 +72,7 @@ databases: ~/cram/db/subsystems2peg ~/cram/db/subsystems2role ~/cram/db/seed.fas
 
 ~/cram/db/seed.fasta:
 	curl ftp://ftp.theseed.org/genomes/SEED/SEED.fasta.gz | gunzip > ~/cram/db/seed.fasta
+
+~/cram/db/tc_seed.fasta: ~/cram/db/seed.fasta ~/cram/db/subsystems2peg ~/cram/db/subsystems2role
+	python metacram/theseed.py ~/cram/db/seed.fasta ~/cram/db/subsystems2peg ~/cram/db/subsystems2role
+	makeblastdb -in ~/cram/db/tc_seed.fasta -out ~/cram/db/tc_seed.fasta -dbtype nucl -max_file_sz 256MB
