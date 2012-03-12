@@ -2,3 +2,4 @@
 *.smi
 *.sma
 doc/_build
+log.txt
