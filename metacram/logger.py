@@ -6,19 +6,6 @@ def log(s):
     with open('log.txt', 'a') as out:
         print >> out, message
 
-def get_outdir(out):
-    ''' Create a function to add output directory to a given directory
-    
-    >>> d_func = get_outdir('test')
-    >>> print d_func('another_directory')
-    test/another_directory
-    
-     '''
-    def s(s):
-        # TODO make sure directories exist and if not, make them
-        return out + '/' + s.lstrip('/')
-    return s
-
 def ohai(s):
     '''
     Status message for when something mediocre happens
