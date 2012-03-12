@@ -69,6 +69,8 @@ def trim_pairs(**ops):
                 counts['right'] += 1
             else:
                 # both are good, keep both!
+                left_trimmed.header = left_trimmed.header + ':A'
+                right_trimmed.header = right_trimmed.header + ':B'
                 print >> out_trimmed, left_trimmed.fastq
                 print >> out_trimmed, right_trimmed.fastq
                 counts['pairs'] += 1
