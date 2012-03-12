@@ -63,7 +63,7 @@ def smalt_map(**ops):
     identity  = ops['identity']
     out       = ops['out']
     threads   = ops.get('threads', 8)
-    l         = opts.get('l', False)
+    l         = ops.get('l', False)
     
     if type(query) is str:
         query_ops = '-q %s' % ops['query']
@@ -79,13 +79,13 @@ def smalt_map(**ops):
     ]
     
     # for paired-end assemblies
-    if l: cmd << '-l %s' % l
+    if l: cmd.append('-l %s' % l)
     
-    cmd << '%s' % reference
-    cmd << '%s' % query
+    cmd.append('%s' % reference)
+    cmd.append('%s' % query)
     
     # be quiet (really, this should get logged somewhere)
-    cmd << '> /dev/null'
+    cmd.append('> /dev/null')
     
     cmd = ' '.join(cmd)
     
