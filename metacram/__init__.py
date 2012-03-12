@@ -4,6 +4,7 @@ from trim import *
 from runner import *
 from logger import *
 
+from misc import *
 from clc import *
 from phmmer import *
 from prodigal import *
