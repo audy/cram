@@ -1,5 +1,0 @@
-cigar:N:00 record1 0 0 * * 0 0 + 0 *
-cigar:N:00 record2 0 0 * * 0 0 + 0 *
-cigar:N:00 record3 0 0 * * 0 0 + 0 *
-cigar:N:00 record4 0 0 * * 0 0 + 0 *
-cigar:N:00 record5 0 0 * * 0 0 + 0 *
