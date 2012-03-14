@@ -1,5 +1,7 @@
 import os
+import subprocess
 from logger import *
+
 def run(cmd, generates=False, force=False, silent=False, sgi=False):
     ''' Runs a system command unless output exists unless forced.
     Prints a message when it's done'
@@ -44,19 +46,29 @@ def run(cmd, generates=False, force=False, silent=False, sgi=False):
     if force:
         okay('forced')
     
-    res = os.system(cmd)
-    if res == 0:
-        if generates:
-            okay('complete')
-        elif not silent:
-            okay(cmd)
-    else:
+    # RUN COMMAND
+    try:
+        res = subprocess.call(cmd.split())
+    
+    # COMMAND FAILED
+    except CalledProcessError:
         if generates:
             for f in generates:
                 if os.path.exists(f):
                     os.unlink(f)
         if not silent:
             ohno(cmd)
+    
+    # IT'S ALL GOOD
+    else:
+        if generates:
+            okay('complete')
+        elif not silent:
+            okay(cmd)
+    # RETURN RESULT
+    finally:
+        return res
+
 
 if __name__ == '__main__':
     import doctest
