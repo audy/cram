@@ -97,18 +97,18 @@ split_fasta(
 )
 
 ## IDENTIFY ORFS WITH PHMMER or BLAST
-for q in glob(d('orfs/split/*.faa')):
+for q in glob(d('orfs/split/*.fasta')):
     if alignment == 'phmmer':
         phmmer(
             query = q,
             db    = db['tc_seed'],
-            out   = d('anno/proteins.%s.txt' % q)
+            out   = d('anno/proteins.%s.txt' % os.path.basename(q))
         )
     elif alignment == 'blast':
         blastp(
             query = q,
             db    = db['tc_seed'],
-            out   = d('anno/proteins.%s.txt' % q)
+            out   = d('anno/proteins.%s.txt' % os.path.basename(q))
         )
 
 ## GET ORF COVERAGE using SMALT
