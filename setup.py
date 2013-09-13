@@ -13,7 +13,7 @@ setup(name="metacram",
       packages = find_packages(),
       keywords= "bioinformatics metagenome metagenomics",
       zip_safe = False,
-      entry_points = { 
+      entry_points = {
         'console_scripts':
         ['metacram = metacram.cram_cli:main']
       }
