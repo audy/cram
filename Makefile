@@ -17,6 +17,9 @@ default: ~/cram/db/ ~/cram/bin binaries databases
 ~/cram/bin:
 	mkdir -p ~/cram/bin
 
+test:
+	nosetests --with-doctest metacram/*.py
+
 update:
 	git pull git@heyaudy.com:git/cram.git master
 
